@@ -3,7 +3,15 @@
 import { useEffect, useState } from "react";
 import TSpan from "@/app/ui/tspan";
 
-export default function Typewriter({ words }: { words: string[] }) {
+export default function Typewriter({
+  words,
+  scaleConstant,
+  typeSpeed,
+}: {
+  words: string[];
+  scaleConstant: number;
+  typeSpeed: number;
+}) {
   const [index, setIndex] = useState(0);
   const [pairs, setPairs] = useState<any>([]);
 
@@ -15,11 +23,11 @@ export default function Typewriter({ words }: { words: string[] }) {
     if (index < words.length) {
       const timer = setTimeout(() => {
         for (let i = 0; i < index + 1; i++) {
-          const scale = 1 - (i / words.length) * 0.8; // from 1 → 0.7
+          const scale = 1 - (i / words.length) * scaleConstant;
           addTspan(words[i], scale);
         }
         setIndex(index + 1);
-      }, 50); // typing speed in ms
+      }, typeSpeed);
       return () => clearTimeout(timer);
     }
   }, [index, words]);

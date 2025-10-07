@@ -17,8 +17,13 @@ export default function Spiral({
   const config = {
     jitter: 50,
     pointsPerTurn: 240,
+    rMax: 800,
+    rMin: 300,
+    scaleConstant: 0.8, // from 1 -> 0.8
     start: "gyre", // "center", "top-left", "top-right", "bottom-left", "bottom-right"
+    textSliceBase: 900,
     turns: 15,
+    typeSpeed: 50, // in ms
   };
 
   const pathRef = useRef<any>(null);
@@ -79,8 +84,8 @@ export default function Spiral({
   useEffect(() => {
     /* This section decides the random factors */
     setStartOffset(`${Math.floor(Math.random() * 15) + 10}%`); // [10, 25]%
-    const r = Math.floor(Math.random() * 700) + 300; // [300, 900]
-    const textSlice = 800 + 5 * r; // this determines the density and the swirl center
+    const r = Math.floor(Math.random() * config.rMax) + config.rMin; // [300, 900]
+    const textSlice = config.textSliceBase + 5 * r; // this determines the density and the swirl center
     const xJitter = Math.floor(Math.random() * config.jitter) - config.jitter;
     const yJitter = Math.floor(Math.random() * config.jitter) - config.jitter;
 
@@ -117,7 +122,11 @@ export default function Spiral({
           ref={textRef}
           style={{ opacity: 1 }}
         >
-          <Typewriter words={words} />
+          <Typewriter
+            words={words}
+            scaleConstant={config.scaleConstant}
+            typeSpeed={config.typeSpeed}
+          />
         </textPath>
       </text>
     </>
