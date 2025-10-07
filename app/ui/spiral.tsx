@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, RefObject } from "react";
-import TSpan from "@/app/ui/tspan";
+import Typewriter from "@/app/ui/typewriter";
 
 export default function Spiral({
   text,
@@ -15,9 +15,10 @@ export default function Spiral({
   const [pathId, setPathId] = useState("test");
 
   const config = {
-    turns: 15,
+    jitter: 50,
     pointsPerTurn: 240,
     start: "gyre", // "center", "top-left", "top-right", "bottom-left", "bottom-right"
+    turns: 15,
   };
 
   const pathRef = useRef<any>(null);
@@ -27,8 +28,6 @@ export default function Spiral({
     r: number,
     center: { x: number; y: number },
   ) => {
-    console.log(center);
-
     const maxR = r;
     const turns = config.turns;
     const thetaMax = Math.PI * 2 * turns;
@@ -71,8 +70,7 @@ export default function Spiral({
     const width = parseFloat(svg.viewBox.baseVal.width);
     const height = parseFloat(svg.viewBox.baseVal.height);
 
-    const center = { x: (3 * width) / 5 + xJitter, y: height / 2 + yJitter };
-    console.log(center);
+    const center = { x: (5 * width) / 7 + xJitter, y: height / 2 + yJitter };
 
     const d = buildClockwiseSpiral(r, center);
     path.setAttribute("d", d);
@@ -81,10 +79,10 @@ export default function Spiral({
   useEffect(() => {
     /* This section decides the random factors */
     setStartOffset(`${Math.floor(Math.random() * 15) + 10}%`); // [10, 25]%
-    const r = Math.floor(Math.random() * 600) + 200; // [200, 800]
+    const r = Math.floor(Math.random() * 700) + 300; // [300, 900]
     const textSlice = 800 + 5 * r; // this determines the density and the swirl center
-    const xJitter = Math.floor(Math.random() * 10) - 10;
-    const yJitter = Math.floor(Math.random() * 10) - 10;
+    const xJitter = Math.floor(Math.random() * config.jitter) - config.jitter;
+    const yJitter = Math.floor(Math.random() * config.jitter) - config.jitter;
 
     drawSpiral(r, xJitter, yJitter);
     setWords(text.slice(0, textSlice).split(" "));
@@ -95,7 +93,7 @@ export default function Spiral({
 
     setPathId(Math.random().toString(36).replace("0.", ""));
 
-    console.log(`r: ${r}, text.length: ${textSlice}`);
+    //console.log(`r: ${r}, text.length: ${textSlice}`);
   }, []);
 
   return (
@@ -119,7 +117,7 @@ export default function Spiral({
           ref={textRef}
           style={{ opacity: 1 }}
         >
-          <TSpan words={words} />
+          <Typewriter words={words} />
         </textPath>
       </text>
     </>
