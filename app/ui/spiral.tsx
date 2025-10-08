@@ -83,7 +83,6 @@ export default function Spiral({
   };
 
   useEffect(() => {
-    console.log(text);
     /* This section decides the random factors */
     setStartOffset(
       `${Math.floor(Math.random() * config.startOffsetMax) + config.startOffsetMin}%`,

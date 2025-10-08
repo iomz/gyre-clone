@@ -6,18 +6,14 @@ import { useEffect, useRef, useState } from "react";
 type VoiceOption = SpeechSynthesisVoice | null;
 
 export default function Home() {
-  const [text0, setText0] = useState("");
-  const [text1, setText1] = useState("");
-  const [text2, setText2] = useState("");
-  const [text3, setText3] = useState("");
-  const [text4, setText4] = useState("");
-  const [text5, setText5] = useState("");
+  const [textSet, setTextSet] = useState<string[]>([]);
   const [length, setLength] = useState<number>(4000);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [selectedVoice, setSelectedVoice] = useState<VoiceOption>(null);
   const [loading, setLoading] = useState(false);
   const [language, setLanguage] = useState<string>("en-US");
   const svgRef = useRef<any>(null);
+  const numberOfSpirals = 6;
 
   // load voices
   useEffect(() => {
@@ -41,50 +37,29 @@ export default function Home() {
     let mounted = true;
     async function fetchText() {
       setLoading(true);
-      try {
-        let res = await fetch(
-          `/api/text?length=${length}&language=${encodeURIComponent(language)}`,
-        );
-        let data = await res.json();
-        if (mounted) setText0(data.text ?? "");
-
-        res = await fetch(
-          `/api/text?length=${length}&language=${encodeURIComponent(language)}`,
-        );
-        data = await res.json();
-        if (mounted) setText1(data.text ?? "");
-
-        res = await fetch(
-          `/api/text?length=${length}&language=${encodeURIComponent(language)}`,
-        );
-        data = await res.json();
-        if (mounted) setText2(data.text ?? "");
-
-        res = await fetch(
-          `/api/text?length=${length}&language=${encodeURIComponent(language)}`,
-        );
-        data = await res.json();
-        if (mounted) setText3(data.text ?? "");
-
-        res = await fetch(
-          `/api/text?length=${length}&language=${encodeURIComponent(language)}`,
-        );
-        data = await res.json();
-        if (mounted) setText4(data.text ?? "");
-
-        res = await fetch(
-          `/api/text?length=${length}&language=${encodeURIComponent(language)}`,
-        );
-        data = await res.json();
-        if (mounted) setText5(data.text ?? "");
-      } catch (e) {
-        if (mounted) {
-          const text =
-            "Ultimately, love is the thread that weaves meaning into the fabric of human existence. It is the force that inspires art, music, poetry, and countless acts of kindness. It gives depth to our joys and softens the pain of our sorrows. To love and to be loved is to touch something beyond ourselves, to experience a connection that affirms our shared humanity. It is both a refuge and a challenge, a constant invitation to grow, to forgive, and to embrace life in all its beauty and complexity. In every sense, love is the heartbeat of our existence, quietly persistent, endlessly patient, and infinitely transformative.";
-          setText0(text);
+      for (let i = 0; i < numberOfSpirals; i++) {
+        let res = null;
+        let data: { text: any } | null = null;
+        try {
+          res = await fetch(
+            `/api/text?length=${length}&language=${encodeURIComponent(language)}`,
+          );
+          data = await res.json();
+          if (mounted && data) {
+            // @ts-ignore
+            setTextSet((prev) => [...prev, data.text ?? ""]);
+          }
+        } catch (e) {
+          if (mounted) {
+            const text =
+              "Ultimately, love is the thread that weaves meaning into the fabric of human existence. It is the force that inspires art, music, poetry, and countless acts of kindness. It gives depth to our joys and softens the pain of our sorrows. To love and to be loved is to touch something beyond ourselves, to experience a connection that affirms our shared humanity. It is both a refuge and a challenge, a constant invitation to grow, to forgive, and to embrace life in all its beauty and complexity. In every sense, love is the heartbeat of our existence, quietly persistent, endlessly patient, and infinitely transformative.";
+            setTextSet((prev) => [...prev, text]);
+          }
+        } finally {
+          if (mounted) {
+            setLoading(false);
+          }
         }
-      } finally {
-        if (mounted) setLoading(false);
       }
     }
     fetchText();
@@ -93,28 +68,27 @@ export default function Home() {
     };
   }, [length, language]);
 
-  // speak text
+  // automatically repeat speech after silent interval
   useEffect(() => {
-    const text = text0;
-    if (text && !loading && selectedVoice) {
+    handleReplay();
+  }, [textSet, selectedVoice, language]);
+
+  const handleReplay = () => {
+    if (textSet.length == numberOfSpirals && !loading) {
+      // TODO: implement text to speak algorithm here
+      const text = textSet[0];
       const utter = new SpeechSynthesisUtterance(text);
-      utter.voice = selectedVoice;
+      utter.voice = selectedVoice ?? null;
       utter.lang = language;
       utter.pitch = 1;
       utter.rate = 1;
       window.speechSynthesis.cancel();
       window.speechSynthesis.speak(utter);
-    }
-  }, [text0, selectedVoice, language]);
 
-  const handleReplay = () => {
-    if (!text0) return;
-    const utter = new SpeechSynthesisUtterance(text0);
-    utter.voice = selectedVoice ?? null;
-    utter.lang = language;
-    utter.rate = 1;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utter);
+      utter.onend = () => {
+        setTimeout(() => handleReplay(), 5000); // wait 5 seconds after speech ends
+      };
+    }
   };
 
   return (
@@ -126,13 +100,10 @@ export default function Home() {
         viewBox="0 0 1600 900"
         preserveAspectRatio="xMidYMid slice"
       >
-        {/* 6 distinctive spirals */}
-        <Spiral svgRef={svgRef} text={text0} />
-        <Spiral svgRef={svgRef} text={text1} />
-        <Spiral svgRef={svgRef} text={text2} />
-        <Spiral svgRef={svgRef} text={text3} />
-        <Spiral svgRef={svgRef} text={text4} />
-        <Spiral svgRef={svgRef} text={text5} />
+        {/* numberOfSpirals distinctive spirals */}
+        {textSet.map((text, key) => (
+          <Spiral svgRef={svgRef} text={text} key={key} />
+        ))}
       </svg>
 
       <div className="absolute bottom-5 right-5 flex items-center gap-2 text-sm font-medium text-white">

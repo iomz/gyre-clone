@@ -29,6 +29,8 @@ export default function Typewriter({
         setIndex(index + 1);
       }, typeSpeed);
       return () => clearTimeout(timer);
+    } else if (index == words.length) {
+      console.log("typing finished.");
     }
   }, [index, words]);
 

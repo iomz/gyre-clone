@@ -49,7 +49,6 @@ Ultimately, love is the heartbeat of existence. It is the energy that sustains t
 To love and be loved — truly, deeply, without condition — is to taste eternity. It is to know, even for a moment, that we are not alone in this vast and fleeting world. Love is both the journey and the destination, the question and the answer. It is the story written into every heartbeat, the promise whispered by every dawn: that to open our hearts, no matter the cost, is to live fully and honestly. \
 And so, in the end, love is not something we find; it is something we become. It lives in the way we speak, the way we listen, the way we choose compassion over indifference. It is not a possession to be kept, but a gift to be given, again and again. To love is to exist in harmony with life itself — to be a spark of warmth in a world that can sometimes feel cold, to be a reminder that kindness still matters, and that connection is still possible. Love is not merely part of our story; it is the story — the thread that runs through everything we are and everything we will ever be. \
       ";
-  console.log(length);
   return new Response(
     JSON.stringify({ text: text.slice(0, parseInt(length)) }),
     {
