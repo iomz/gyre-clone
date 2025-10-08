@@ -1,4 +1,4 @@
-export default function TSpan({ w, scale }: { w: string; scale: number }) {
+export default function Word({ w, scale }: { w: string; scale: number }) {
   return (
     <tspan
       style={{

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import TSpan from "@/app/ui/tspan";
+import Word from "@/app/ui/word";
 
 export default function Typewriter({
   words,
@@ -15,7 +15,7 @@ export default function Typewriter({
   const [index, setIndex] = useState(0);
   const [pairs, setPairs] = useState<any>([]);
 
-  const addTspan = (w: string, scale: number) => {
+  const addWord = (w: string, scale: number) => {
     setPairs([...pairs, { w: w, scale: scale }]);
   };
 
@@ -24,7 +24,7 @@ export default function Typewriter({
       const timer = setTimeout(() => {
         for (let i = 0; i < index + 1; i++) {
           const scale = 1 - (i / words.length) * scaleConstant;
-          addTspan(words[i], scale);
+          addWord(words[i], scale);
         }
         setIndex(index + 1);
       }, typeSpeed);
@@ -37,7 +37,7 @@ export default function Typewriter({
       {
         // @ts-ignore
         pairs.map((p, i) => (
-          <TSpan w={p.w} scale={p.scale} key={i} />
+          <Word w={p.w} scale={p.scale} key={i} />
         ))
       }
     </>

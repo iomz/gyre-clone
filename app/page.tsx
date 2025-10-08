@@ -3,42 +3,119 @@
 import Spiral from "@/app/ui/spiral";
 import { useEffect, useRef, useState } from "react";
 
-export default function Home() {
-  const text =
-    "Love is the quiet force that binds our lives together, often revealed in the smallest gestures — a gentle word, a patient silence, a hand that stays when everything else feels uncertain. It is the warmth that lingers in the memory of a shared smile, the comfort that comes from knowing someone truly sees you, even in your most flawed moments. Love transcends distance and time, existing in the spaces between words and in the unspoken understanding that two hearts can hold each other even when they are apart. It teaches us empathy, guiding us to feel another’s pain as our own, and patience, as we learn that relationships, like life itself, require care, attention, and gentle tending. \
-    True love is not about possession or perfection, nor is it about controlling another person’s path. Instead, it is about embracing another’s entirety — their strengths, weaknesses, dreams, and fears — and choosing to remain connected despite the inevitable challenges. It is in the quiet sacrifice, the small acts of kindness, and the willingness to forgive that love reveals its depth. Love is the steady hand that holds us when our own resolve falters, the voice that whispers encouragement when doubt clouds our minds, and the anchor that keeps us grounded when life threatens to sweep us away in its chaos. \
-    It transforms ordinary moments into something sacred. A shared meal becomes a memory; a simple walk turns into a journey of hearts; even silence is imbued with meaning when it is accompanied by mutual understanding and trust. Love encourages growth, not just for ourselves but for those we care about, fostering resilience and inspiring courage to face life’s inevitable storms. It is not a fleeting passion or a superficial thrill, but a deep, enduring connection that evolves with time, weathering mistakes, misunderstandings, and the passing of seasons. \
-    Moreover, love is a mirror, reflecting both the beauty and the darkness within us. Through love, we confront our vulnerabilities, our fears of rejection, and our insecurities, and in doing so, we are offered the rare opportunity to transform and heal. It teaches humility, showing us that no one is perfect and that true intimacy comes from the willingness to reveal one’s authentic self. Love also teaches gratitude, reminding us to cherish those who walk alongside us, who hold space for our dreams, and who lend strength when we feel weak. \
-    Moreover, love is a mirror, reflecting both the beauty and the darkness within us. Through love, we confront our vulnerabilities, our fears of rejection, and our insecurities, and in doing so, we are offered the rare opportunity to transform and heal. It teaches humility, showing us that no one is perfect and that true intimacy comes from the willingness to reveal one’s authentic self. Love also teaches gratitude, reminding us to cherish those who walk alongside us, who hold space for our dreams, and who lend strength when we feel weak. \
-    Moreover, love is a mirror, reflecting both the beauty and the darkness within us. Through love, we confront our vulnerabilities, our fears of rejection, and our insecurities, and in doing so, we are offered the rare opportunity to transform and heal. It teaches humility, showing us that no one is perfect and that true intimacy comes from the willingness to reveal one’s authentic self. Love also teaches gratitude, reminding us to cherish those who walk alongside us, who hold space for our dreams, and who lend strength when we feel weak. \
-    Moreover, love is a mirror, reflecting both the beauty and the darkness within us. Through love, we confront our vulnerabilities, our fears of rejection, and our insecurities, and in doing so, we are offered the rare opportunity to transform and heal. It teaches humility, showing us that no one is perfect and that true intimacy comes from the willingness to reveal one’s authentic self. Love also teaches gratitude, reminding us to cherish those who walk alongside us, who hold space for our dreams, and who lend strength when we feel weak. \
-    Moreover, love is a mirror, reflecting both the beauty and the darkness within us. Through love, we confront our vulnerabilities, our fears of rejection, and our insecurities, and in doing so, we are offered the rare opportunity to transform and heal. It teaches humility, showing us that no one is perfect and that true intimacy comes from the willingness to reveal one’s authentic self. Love also teaches gratitude, reminding us to cherish those who walk alongside us, who hold space for our dreams, and who lend strength when we feel weak. \
-    Moreover, love is a mirror, reflecting both the beauty and the darkness within us. Through love, we confront our vulnerabilities, our fears of rejection, and our insecurities, and in doing so, we are offered the rare opportunity to transform and heal. It teaches humility, showing us that no one is perfect and that true intimacy comes from the willingness to reveal one’s authentic self. Love also teaches gratitude, reminding us to cherish those who walk alongside us, who hold space for our dreams, and who lend strength when we feel weak. \
-    Moreover, love is a mirror, reflecting both the beauty and the darkness within us. Through love, we confront our vulnerabilities, our fears of rejection, and our insecurities, and in doing so, we are offered the rare opportunity to transform and heal. It teaches humility, showing us that no one is perfect and that true intimacy comes from the willingness to reveal one’s authentic self. Love also teaches gratitude, reminding us to cherish those who walk alongside us, who hold space for our dreams, and who lend strength when we feel weak. \
-    Moreover, love is a mirror, reflecting both the beauty and the darkness within us. Through love, we confront our vulnerabilities, our fears of rejection, and our insecurities, and in doing so, we are offered the rare opportunity to transform and heal. It teaches humility, showing us that no one is perfect and that true intimacy comes from the willingness to reveal one’s authentic self. Love also teaches gratitude, reminding us to cherish those who walk alongside us, who hold space for our dreams, and who lend strength when we feel weak. \
-    Ultimately, love is the thread that weaves meaning into the fabric of human existence. It is the force that inspires art, music, poetry, and countless acts of kindness. It gives depth to our joys and softens the pain of our sorrows. To love and to be loved is to touch something beyond ourselves, to experience a connection that affirms our shared humanity. It is both a refuge and a challenge, a constant invitation to grow, to forgive, and to embrace life in all its beauty and complexity. In every sense, love is the heartbeat of our existence, quietly persistent, endlessly patient, and infinitely transformative.";
+type VoiceOption = SpeechSynthesisVoice | null;
 
-  const [playing, setPlaying] = useState(false);
+export default function Home() {
+  const [text0, setText0] = useState("");
+  const [text1, setText1] = useState("");
+  const [text2, setText2] = useState("");
+  const [text3, setText3] = useState("");
+  const [text4, setText4] = useState("");
+  const [text5, setText5] = useState("");
+  const [length, setLength] = useState<number>(4000);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [selectedVoice, setSelectedVoice] = useState<VoiceOption>(null);
+  const [loading, setLoading] = useState(false);
+  const [language, setLanguage] = useState<string>("en-US");
   const svgRef = useRef<any>(null);
 
-  const handleReplay = (text: string) => {
-    setPlaying(true);
-
-    setTimeout(() => {
-      if (typeof window !== "undefined" && "speechSynthesis" in window) {
-        window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(text);
-        u.rate = 1;
-        u.pitch = 1;
-        window.speechSynthesis.speak(u);
-      }
-    }, 50);
-  };
-
+  // load voices
   useEffect(() => {
-    // Initialize the speech
-    handleReplay(text);
-  }, []);
+    function loadVoices() {
+      const v = window.speechSynthesis.getVoices();
+      setVoices(v);
+      if (!selectedVoice && v.length > 0) {
+        const preferred = v.find((x) => x.lang === language) || v[0];
+        setSelectedVoice(preferred);
+      }
+    }
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+    return () => {
+      window.speechSynthesis.onvoiceschanged = null;
+    };
+  }, [language]);
+
+  // fetch text from API
+  useEffect(() => {
+    let mounted = true;
+    async function fetchText() {
+      setLoading(true);
+      try {
+        let res = await fetch(
+          `/api/text?length=${length}&language=${encodeURIComponent(language)}`,
+        );
+        let data = await res.json();
+        if (mounted) setText0(data.text ?? "");
+
+        res = await fetch(
+          `/api/text?length=${length}&language=${encodeURIComponent(language)}`,
+        );
+        data = await res.json();
+        if (mounted) setText1(data.text ?? "");
+
+        res = await fetch(
+          `/api/text?length=${length}&language=${encodeURIComponent(language)}`,
+        );
+        data = await res.json();
+        if (mounted) setText2(data.text ?? "");
+
+        res = await fetch(
+          `/api/text?length=${length}&language=${encodeURIComponent(language)}`,
+        );
+        data = await res.json();
+        if (mounted) setText3(data.text ?? "");
+
+        res = await fetch(
+          `/api/text?length=${length}&language=${encodeURIComponent(language)}`,
+        );
+        data = await res.json();
+        if (mounted) setText4(data.text ?? "");
+
+        res = await fetch(
+          `/api/text?length=${length}&language=${encodeURIComponent(language)}`,
+        );
+        data = await res.json();
+        if (mounted) setText5(data.text ?? "");
+      } catch (e) {
+        if (mounted) {
+          const text =
+            "Ultimately, love is the thread that weaves meaning into the fabric of human existence. It is the force that inspires art, music, poetry, and countless acts of kindness. It gives depth to our joys and softens the pain of our sorrows. To love and to be loved is to touch something beyond ourselves, to experience a connection that affirms our shared humanity. It is both a refuge and a challenge, a constant invitation to grow, to forgive, and to embrace life in all its beauty and complexity. In every sense, love is the heartbeat of our existence, quietly persistent, endlessly patient, and infinitely transformative.";
+          setText0(text);
+        }
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+    fetchText();
+    return () => {
+      mounted = false;
+    };
+  }, [length, language]);
+
+  // speak text
+  useEffect(() => {
+    const text = text0;
+    if (text && !loading && selectedVoice) {
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.voice = selectedVoice;
+      utter.lang = language;
+      utter.pitch = 1;
+      utter.rate = 1;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utter);
+    }
+  }, [text0, selectedVoice, language]);
+
+  const handleReplay = () => {
+    if (!text0) return;
+    const utter = new SpeechSynthesisUtterance(text0);
+    utter.voice = selectedVoice ?? null;
+    utter.lang = language;
+    utter.rate = 1;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utter);
+  };
 
   return (
     <div className="relative w-screen h-screen bg-black overflow-hidden">
@@ -49,22 +126,61 @@ export default function Home() {
         viewBox="0 0 1600 900"
         preserveAspectRatio="xMidYMid slice"
       >
-        <Spiral text={text.slice(0, 1000)} svgRef={svgRef} />
-        <Spiral text={text.slice(0, 2000)} svgRef={svgRef} />
-        <Spiral text={text.slice(0, 3000)} svgRef={svgRef} />
-        <Spiral text={text.slice(0, 4000)} svgRef={svgRef} />
-        <Spiral text={text.slice(0, 6000)} svgRef={svgRef} />
-        <Spiral text={text.slice(0, 6000)} svgRef={svgRef} />
-        <Spiral text={text.slice(0, 6000)} svgRef={svgRef} />
-        <Spiral text={text.slice(0, 6000)} svgRef={svgRef} />
+        {/* 6 distinctive spirals */}
+        <Spiral svgRef={svgRef} text={text0} />
+        <Spiral svgRef={svgRef} text={text1} />
+        <Spiral svgRef={svgRef} text={text2} />
+        <Spiral svgRef={svgRef} text={text3} />
+        <Spiral svgRef={svgRef} text={text4} />
+        <Spiral svgRef={svgRef} text={text5} />
       </svg>
 
       <div className="absolute bottom-5 right-5 flex items-center gap-2 text-sm font-medium text-white">
+        <label className="text-gray-300">
+          Length:
+          <input
+            type="number"
+            value={length}
+            onChange={(e) => setLength(Number(e.target.value))}
+            className="ml-2 w-24 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white"
+          />
+        </label>
+
+        <label className="text-gray-300">
+          Language:
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            className="ml-2 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white"
+          >
+            <option value="en-US">English (US)</option>
+            <option value="pt-PT">Português (PT)</option>
+          </select>
+        </label>
+
+        <label className="text-gray-300">
+          Voice:
+          <select
+            value={selectedVoice?.name ?? ""}
+            onChange={(e) => {
+              const v = voices.find((x) => x.name === e.target.value);
+              setSelectedVoice(v || null);
+            }}
+            className="ml-2 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white"
+          >
+            {voices.map((v) => (
+              <option key={v.name} value={v.name}>
+                {v.name} — {v.lang}
+              </option>
+            ))}
+          </select>
+        </label>
+
         <div className="bg-white/10 px-3 py-1.5 rounded-md backdrop-blur-sm">
-          {playing ? "Playing" : "Stopped"}
+          {loading ? "Loading" : "Loaded"}
         </div>
         <button
-          onClick={() => handleReplay(text)}
+          onClick={() => handleReplay()}
           className="bg-white/10 border border-white/20 hover:bg-white/20 text-white px-3 py-1.5 rounded-md transition"
         >
           Replay
