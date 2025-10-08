@@ -6,9 +6,11 @@ import Typewriter from "@/app/ui/typewriter";
 export default function Spiral({
   text,
   svgRef,
+  rdn,
 }: {
   text: string;
   svgRef: RefObject<any>;
+  rdn: number;
 }) {
   const [startOffset, setStartOffset] = useState("10%");
   const [words, setWords] = useState(["test"]);
@@ -82,7 +84,7 @@ export default function Spiral({
     path.setAttribute("d", d);
   };
 
-  useEffect(() => {
+  const animate = () => {
     /* This section decides the random factors */
     setStartOffset(
       `${Math.floor(Math.random() * config.startOffsetMax) + config.startOffsetMin}%`,
@@ -100,9 +102,11 @@ export default function Spiral({
     if (!path || !textEl) return;
 
     setPathId(Math.random().toString(36).replace("0.", ""));
+  };
 
-    //console.log(`r: ${r}, text.length: ${textSlice}`);
-  }, [text]);
+  useEffect(() => {
+    animate();
+  }, [text, rdn]);
 
   return (
     <>

@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 type VoiceOption = SpeechSynthesisVoice | null;
 
 export default function Home() {
+  const [hydrated, setHydrated] = useState(false);
   const [textSet, setTextSet] = useState<string[]>([]);
   const [length, setLength] = useState<number>(4000);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
@@ -14,6 +15,30 @@ export default function Home() {
   const [language, setLanguage] = useState<string>("en-US");
   const svgRef = useRef<any>(null);
   const numberOfSpirals = 6;
+
+  const [redrawN, setRedrawN] = useState<number>(0);
+  const redraw = () => {
+    setRedrawN(redrawN + 1);
+  };
+
+  const handleReplay = () => {
+    if (textSet.length == numberOfSpirals) {
+      // TODO: implement text to speak algorithm here
+      console.log("I should be speaking...");
+      const text = textSet[0];
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.voice = selectedVoice ?? null;
+      utter.lang = language;
+      utter.pitch = 1;
+      utter.rate = 1;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utter);
+
+      utter.onend = () => {
+        setTimeout(() => handleReplay(), 5000); // wait 5 seconds after speech ends
+      };
+    }
+  };
 
   // load voices
   useEffect(() => {
@@ -68,28 +93,20 @@ export default function Home() {
     };
   }, [length, language]);
 
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
   // automatically repeat speech after silent interval
   useEffect(() => {
-    handleReplay();
-  }, [textSet, selectedVoice, language]);
+    const t = setTimeout(() => {
+      console.log("fully hydrated!");
+      handleReplay();
+    }, 5000);
 
-  const handleReplay = () => {
-    if (textSet.length == numberOfSpirals && !loading) {
-      // TODO: implement text to speak algorithm here
-      const text = textSet[0];
-      const utter = new SpeechSynthesisUtterance(text);
-      utter.voice = selectedVoice ?? null;
-      utter.lang = language;
-      utter.pitch = 1;
-      utter.rate = 1;
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(utter);
-
-      utter.onend = () => {
-        setTimeout(() => handleReplay(), 5000); // wait 5 seconds after speech ends
-      };
-    }
-  };
+    // cleanup
+    return () => clearTimeout(t);
+  }, [hydrated]);
 
   return (
     <div className="relative w-screen h-screen bg-black overflow-hidden">
@@ -102,7 +119,7 @@ export default function Home() {
       >
         {/* numberOfSpirals distinctive spirals */}
         {textSet.map((text, key) => (
-          <Spiral svgRef={svgRef} text={text} key={key} />
+          <Spiral key={key} svgRef={svgRef} text={text} rdn={redrawN} />
         ))}
       </svg>
 
@@ -155,6 +172,13 @@ export default function Home() {
           className="bg-white/10 border border-white/20 hover:bg-white/20 text-white px-3 py-1.5 rounded-md transition"
         >
           Replay
+        </button>
+
+        <button
+          onClick={() => redraw()}
+          className="bg-white/10 border border-white/20 hover:bg-white/20 text-white px-3 py-1.5 rounded-md transition"
+        >
+          Redraw
         </button>
       </div>
     </div>
