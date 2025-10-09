@@ -1,19 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Config from "@/components/config";
 import Word from "@/app/ui/word";
 
 export default function Typewriter({
+  config,
   words,
-  fontSizeConstant,
-  scaleConstant,
-  typeSpeed,
   rdn,
 }: {
+  config: Config;
   words: string[];
-  fontSizeConstant: number;
-  scaleConstant: number;
-  typeSpeed: number;
   rdn: number;
 }) {
   const [index, setIndex] = useState(0);
@@ -27,11 +24,11 @@ export default function Typewriter({
     if (index < words.length) {
       const timer = setTimeout(() => {
         for (let i = 0; i < index + 1; i++) {
-          const scale = 1 - (i / words.length) * scaleConstant;
+          const scale = 1 - (i / words.length) * config.scaleConstant;
           addWord(words[i], scale);
         }
         setIndex(index + 1);
-      }, typeSpeed);
+      }, config.typeSpeed);
       return () => clearTimeout(timer);
     }
   }, [index, words]);
@@ -49,7 +46,7 @@ export default function Typewriter({
           <Word
             w={p.w}
             scale={p.scale}
-            fontSizeConstant={fontSizeConstant}
+            fontSizeConstant={config.fontSizeConstant}
             key={i}
           />
         ))

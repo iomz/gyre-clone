@@ -1,7 +1,8 @@
 "use client";
 
-import Spiral from "@/app/ui/spiral";
 import { useEffect, useRef, useState } from "react";
+import Config from "@/components/config";
+import Spiral from "@/app/ui/spiral";
 
 type VoiceOption = SpeechSynthesisVoice | null;
 
@@ -16,7 +17,24 @@ export default function Home() {
   const [cx, setCx] = useState<number>(0);
   const [cy, setCy] = useState<number>(0);
   const svgRef = useRef<any>(null);
-  const numberOfSpirals = 6;
+  const config: Config = {
+    cXMax: 75,
+    cXMin: 25,
+    cYMax: 55,
+    cYMin: 45,
+    fontSizeConstant: 0.8,
+    jitter: 30,
+    numberOfSpirals: 8,
+    pointsPerTurn: 240,
+    rMax: 600,
+    rMin: 250,
+    scaleConstant: 0.8, // from 1 -> 0.2
+    startOffsetMax: 30,
+    startOffsetMin: 0,
+    textSliceBase: 900,
+    turns: 15,
+    typeSpeed: 50, // in ms
+  };
 
   const [redrawN, setRedrawN] = useState<number>(0);
   const redraw = () => {
@@ -24,7 +42,7 @@ export default function Home() {
   };
 
   const handleReplay = () => {
-    if (textSet.length == numberOfSpirals) {
+    if (textSet.length == config.numberOfSpirals) {
       // TODO: implement text to speak algorithm here
       console.log("I should be speaking...");
       const text = textSet[0];
@@ -44,8 +62,12 @@ export default function Home() {
 
   useEffect(() => {
     /* randomize the center position */
-    setCx(Math.floor(Math.random() * 60) + 20);
-    setCy(Math.floor(Math.random() * 30) + 30);
+    setCx(
+      Math.floor(Math.random() * (config.cXMax - config.cXMin)) + config.cXMin,
+    );
+    setCy(
+      Math.floor(Math.random() * (config.cYMax - config.cYMin)) + config.cYMin,
+    );
   }, []);
 
   // load voices
@@ -70,7 +92,7 @@ export default function Home() {
     let mounted = true;
     async function fetchText() {
       setLoading(true);
-      for (let i = 0; i < numberOfSpirals; i++) {
+      for (let i = 0; i < config.numberOfSpirals; i++) {
         let res = null;
         let data: { text: any } | null = null;
         try {
@@ -109,7 +131,7 @@ export default function Home() {
   useEffect(() => {
     const t = setTimeout(() => {
       console.log("fully hydrated!");
-      handleReplay();
+      //handleReplay();
     }, 5000);
 
     // cleanup
@@ -128,12 +150,13 @@ export default function Home() {
         {/* numberOfSpirals distinctive spirals */}
         {textSet.map((text, key) => (
           <Spiral
-            key={key}
-            svgRef={svgRef}
+            config={config}
             text={text}
+            svgRef={svgRef}
             cx={cx}
             cy={cy}
             rdn={redrawN}
+            key={key}
           />
         ))}
       </svg>

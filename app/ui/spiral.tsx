@@ -1,15 +1,18 @@
 "use client";
 
 import { useEffect, useRef, useState, RefObject } from "react";
+import Config from "@/components/config";
 import Typewriter from "@/app/ui/typewriter";
 
 export default function Spiral({
+  config,
   text,
   svgRef,
   cx,
   cy,
   rdn,
 }: {
+  config: Config;
   text: string;
   svgRef: RefObject<any>;
   cx: number;
@@ -21,21 +24,6 @@ export default function Spiral({
   const [pathId, setPathId] = useState("test");
   const pathRef = useRef<any>(null);
   const textPathRef = useRef<any>(null);
-
-  const config = {
-    fontSizeConstant: 0.8,
-    jitter: 50,
-    pointsPerTurn: 240,
-    rMax: 600,
-    rMin: 270,
-    scaleConstant: 0.8, // from 1 -> 0.2
-    start: "gyre", // "center", "top-left", "top-right", "bottom-left", "bottom-right"
-    startOffsetMax: 30,
-    startOffsetMin: 0,
-    textSliceBase: 900,
-    turns: 15,
-    typeSpeed: 50, // in ms
-  };
 
   const buildClockwiseSpiral = (
     r: number,
@@ -99,7 +87,8 @@ export default function Spiral({
       `${Math.floor(Math.random() * config.startOffsetMax) + config.startOffsetMin}%`,
     );
     // the r of the spiral
-    const r = Math.floor(Math.random() * config.rMax) + config.rMin;
+    const r =
+      Math.floor(Math.random() * (config.rMax - config.rMin)) + config.rMin;
     // the length of the text to be rendered
     const textSlice = config.textSliceBase + 5 * r;
     // the jitter of the center position of the spiral
@@ -117,7 +106,7 @@ export default function Spiral({
   };
 
   useEffect(() => {
-    console.log(cx, cy);
+    // console.log(cx, cy); // somehow this runs twice as expected
     animate();
   }, [text, cx, cy]);
 
@@ -142,13 +131,7 @@ export default function Spiral({
           ref={textPathRef}
           style={{ opacity: 1 }}
         >
-          <Typewriter
-            words={words}
-            fontSizeConstant={config.fontSizeConstant}
-            scaleConstant={config.scaleConstant}
-            typeSpeed={config.typeSpeed}
-            rdn={rdn}
-          />
+          <Typewriter config={config} words={words} rdn={rdn} />
         </textPath>
       </text>
     </>
