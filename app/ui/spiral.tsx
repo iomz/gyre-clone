@@ -23,10 +23,11 @@ export default function Spiral({
   const textPathRef = useRef<any>(null);
 
   const config = {
+    fontSizeConstant: 0.8,
     jitter: 50,
     pointsPerTurn: 240,
-    rMax: 800,
-    rMin: 300,
+    rMax: 600,
+    rMin: 270,
     scaleConstant: 0.8, // from 1 -> 0.2
     start: "gyre", // "center", "top-left", "top-right", "bottom-left", "bottom-right"
     startOffsetMax: 30,
@@ -143,6 +144,7 @@ export default function Spiral({
         >
           <Typewriter
             words={words}
+            fontSizeConstant={config.fontSizeConstant}
             scaleConstant={config.scaleConstant}
             typeSpeed={config.typeSpeed}
             rdn={rdn}

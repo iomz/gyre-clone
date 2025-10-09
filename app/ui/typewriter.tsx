@@ -5,11 +5,13 @@ import Word from "@/app/ui/word";
 
 export default function Typewriter({
   words,
+  fontSizeConstant,
   scaleConstant,
   typeSpeed,
   rdn,
 }: {
   words: string[];
+  fontSizeConstant: number;
   scaleConstant: number;
   typeSpeed: number;
   rdn: number;
@@ -44,7 +46,12 @@ export default function Typewriter({
       {
         // @ts-ignore
         pairs.map((p, i) => (
-          <Word w={p.w} scale={p.scale} key={i} />
+          <Word
+            w={p.w}
+            scale={p.scale}
+            fontSizeConstant={fontSizeConstant}
+            key={i}
+          />
         ))
       }
     </>

@@ -1,8 +1,16 @@
-export default function Word({ w, scale }: { w: string; scale: number }) {
+export default function Word({
+  w,
+  scale,
+  fontSizeConstant,
+}: {
+  w: string;
+  scale: number;
+  fontSizeConstant: number;
+}) {
   return (
     <tspan
       style={{
-        fontSize: `${scale}em`,
+        fontSize: `${fontSizeConstant * scale}em`,
         opacity: `${scale}`,
       }}
     >
