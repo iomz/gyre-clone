@@ -13,6 +13,8 @@ export default function Home() {
   const [selectedVoice, setSelectedVoice] = useState<VoiceOption>(null);
   const [loading, setLoading] = useState(false);
   const [language, setLanguage] = useState<string>("en-US");
+  const [cx, setCx] = useState<number>(0);
+  const [cy, setCy] = useState<number>(0);
   const svgRef = useRef<any>(null);
   const numberOfSpirals = 6;
 
@@ -39,6 +41,12 @@ export default function Home() {
       };
     }
   };
+
+  useEffect(() => {
+    /* randomize the center position */
+    setCx(Math.floor(Math.random() * 60) + 20);
+    setCy(Math.floor(Math.random() * 30) + 30);
+  }, []);
 
   // load voices
   useEffect(() => {
@@ -97,7 +105,7 @@ export default function Home() {
     setHydrated(true);
   }, []);
 
-  // automatically repeat speech after silent interval
+  // runs after hydration
   useEffect(() => {
     const t = setTimeout(() => {
       console.log("fully hydrated!");
@@ -119,7 +127,14 @@ export default function Home() {
       >
         {/* numberOfSpirals distinctive spirals */}
         {textSet.map((text, key) => (
-          <Spiral key={key} svgRef={svgRef} text={text} rdn={redrawN} />
+          <Spiral
+            key={key}
+            svgRef={svgRef}
+            text={text}
+            cx={cx}
+            cy={cy}
+            rdn={redrawN}
+          />
         ))}
       </svg>
 

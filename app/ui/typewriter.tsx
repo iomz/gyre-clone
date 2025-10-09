@@ -7,10 +7,12 @@ export default function Typewriter({
   words,
   scaleConstant,
   typeSpeed,
+  rdn,
 }: {
   words: string[];
   scaleConstant: number;
   typeSpeed: number;
+  rdn: number;
 }) {
   const [index, setIndex] = useState(0);
   const [pairs, setPairs] = useState<any>([]);
@@ -31,6 +33,11 @@ export default function Typewriter({
       return () => clearTimeout(timer);
     }
   }, [index, words]);
+
+  useEffect(() => {
+    setIndex(0);
+    setPairs([]);
+  }, [rdn]);
 
   return (
     <>

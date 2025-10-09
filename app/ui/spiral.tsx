@@ -6,10 +6,14 @@ import Typewriter from "@/app/ui/typewriter";
 export default function Spiral({
   text,
   svgRef,
+  cx,
+  cy,
   rdn,
 }: {
   text: string;
   svgRef: RefObject<any>;
+  cx: number;
+  cy: number;
   rdn: number;
 }) {
   const [startOffset, setStartOffset] = useState("10%");
@@ -23,7 +27,7 @@ export default function Spiral({
     pointsPerTurn: 240,
     rMax: 800,
     rMin: 300,
-    scaleConstant: 0.8, // from 1 -> 0.8
+    scaleConstant: 0.8, // from 1 -> 0.2
     start: "gyre", // "center", "top-left", "top-right", "bottom-left", "bottom-right"
     startOffsetMax: 30,
     startOffsetMin: 0,
@@ -78,7 +82,10 @@ export default function Spiral({
     const width = parseFloat(svg.viewBox.baseVal.width);
     const height = parseFloat(svg.viewBox.baseVal.height);
 
-    const center = { x: (5 * width) / 7 + xJitter, y: height / 2 + yJitter };
+    const center = {
+      x: cx * (width / 100) + xJitter,
+      y: cy * (height / 100) + yJitter,
+    };
 
     const d = buildClockwiseSpiral(r, center);
     path.setAttribute("d", d);
@@ -86,11 +93,15 @@ export default function Spiral({
 
   const animate = () => {
     /* This section decides the random factors */
+    // the start percentage of the spiral path
     setStartOffset(
       `${Math.floor(Math.random() * config.startOffsetMax) + config.startOffsetMin}%`,
     );
+    // the r of the spiral
     const r = Math.floor(Math.random() * config.rMax) + config.rMin;
+    // the length of the text to be rendered
     const textSlice = config.textSliceBase + 5 * r;
+    // the jitter of the center position of the spiral
     const xJitter = Math.floor(Math.random() * config.jitter) - config.jitter;
     const yJitter = Math.floor(Math.random() * config.jitter) - config.jitter;
 
@@ -105,8 +116,9 @@ export default function Spiral({
   };
 
   useEffect(() => {
+    console.log(cx, cy);
     animate();
-  }, [text, rdn]);
+  }, [text, cx, cy]);
 
   return (
     <>
@@ -133,6 +145,7 @@ export default function Spiral({
             words={words}
             scaleConstant={config.scaleConstant}
             typeSpeed={config.typeSpeed}
+            rdn={rdn}
           />
         </textPath>
       </text>
