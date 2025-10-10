@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, RefObject } from "react";
-import Config from "@/app/lib/config";
+import { Center, Config } from "@/app/lib/types";
 import Typewriter from "@/app/ui/typewriter";
 
 export default function Spiral({
@@ -10,26 +10,21 @@ export default function Spiral({
   svgRef,
   cx,
   cy,
-  rdn,
 }: {
   config: Config;
   text: string;
   svgRef: RefObject<any>;
   cx: number;
   cy: number;
-  rdn: number;
 }) {
-  const [startOffset, setStartOffset] = useState("10%");
-  const [initialFontSize, setInitialFontSize] = useState(1);
+  const [startOffset, setStartOffset] = useState<string>("10%");
+  const [initialFontSize, setInitialFontSize] = useState<number>(1);
   const [words, setWords] = useState<string[]>([]);
-  const [pathId, setPathId] = useState("");
+  const [pathId, setPathId] = useState<string>("");
   const pathRef = useRef<any>(null);
   const textPathRef = useRef<any>(null);
 
-  const buildClockwiseSpiral = (
-    r: number,
-    center: { x: number; y: number },
-  ) => {
+  const buildClockwiseSpiral = (r: number, center: Center) => {
     const maxR = r;
     const turns = config.turns;
     const thetaMax = Math.PI * 2 * turns;
@@ -57,30 +52,6 @@ export default function Spiral({
     return d;
   };
 
-  const drawSpiral = async (r: number, xJitter: number, yJitter: number) => {
-    const svg = svgRef.current;
-    const path = pathRef.current;
-    if (!svg || !path) return;
-
-    const vw = window.innerWidth / 2;
-    const vh = window.innerHeight / 2;
-    svg.setAttribute(
-      "viewBox",
-      `0 0 ${Math.max(100, vw)} ${Math.max(100, vh)}`,
-    );
-
-    const width = parseFloat(svg.viewBox.baseVal.width);
-    const height = parseFloat(svg.viewBox.baseVal.height);
-
-    const center = {
-      x: cx * (width / 100) + xJitter,
-      y: cy * (height / 100) + yJitter,
-    };
-
-    const d = buildClockwiseSpiral(r, center);
-    path.setAttribute("d", d);
-  };
-
   const animate = () => {
     // remove this spiral
 
@@ -103,20 +74,43 @@ export default function Spiral({
         config.fontMin,
     );
 
-    drawSpiral(r, xJitter, yJitter);
+    /* draw spiral */
+    const svg = svgRef.current;
+    const path = pathRef.current;
+    if (!svg || !path) return;
+
+    // calculate the center
+    const vw = window.innerWidth / 2;
+    const vh = window.innerHeight / 2;
+    svg.setAttribute(
+      "viewBox",
+      `0 0 ${Math.max(100, vw)} ${Math.max(100, vh)}`,
+    );
+    const width = parseFloat(svg.viewBox.baseVal.width);
+    const height = parseFloat(svg.viewBox.baseVal.height);
+    const center = {
+      x: cx * (width / 100) + xJitter,
+      y: cy * (height / 100) + yJitter,
+    };
+
+    // generate the d for the spiral
+    const d = buildClockwiseSpiral(r, center);
+    path.setAttribute("d", d);
+
+    // build the text to be displayed
     setWords(text.slice(0, textSlice).split(" "));
 
-    const path = pathRef.current;
     const textEl = textPathRef.current;
     if (!path || !textEl) return;
 
+    // set a unique id for the path
     setPathId(Math.random().toString(36).replace("0.", ""));
   };
 
   useEffect(() => {
-    // console.log(cx, cy); // somehow this runs twice as expected
+    console.log(cx, cy, text.length); // somehow this runs twice as expected
     animate();
-  }, [text, cx, cy, config]);
+  }, [text]);
 
   return (
     <>
@@ -143,7 +137,6 @@ export default function Spiral({
             config={config}
             words={words}
             initialFontSize={initialFontSize}
-            rdn={rdn}
           />
         </textPath>
       </text>

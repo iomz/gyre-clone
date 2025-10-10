@@ -1,8 +1,15 @@
-export default interface Config {
+export interface Center {
+  x: number;
+  y: number;
+}
+
+export interface Config {
   cXMax: number;
   cXMin: number;
   cYMax: number;
   cYMin: number;
+  fadeoutRate: number;
+  fadeoutSpeed: number;
   fontMax: number;
   fontMin: number;
   jitter: number;

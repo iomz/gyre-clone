@@ -2,7 +2,6 @@
 
 import { Suspense } from "react";
 import { useEffect, useRef, useState } from "react";
-import Config from "@/app/lib/config";
 import Spiral from "@/app/ui/spiral";
 
 type VoiceOption = SpeechSynthesisVoice | null;
@@ -18,14 +17,16 @@ export default function Home() {
   const [cx, setCx] = useState<number>(0);
   const [cy, setCy] = useState<number>(0);
   const svgRef = useRef<any>(null);
-  const [numberOfSpirals, setNumberOfSpirals] = useState<number>(1);
+  const [numberOfSpirals, setNumberOfSpirals] = useState<number>(4);
   const config = {
     cXMax: 75,
     cXMin: 25,
     cYMax: 55,
     cYMin: 45,
-    fontMax: 0.5, // in em
-    fontMin: 0.2, // in em
+    fadeoutRate: 0.01,
+    fadeoutSpeed: 500,
+    fontMax: 0.4, // in em
+    fontMin: 0.3, // in em
     jitter: 30,
     pointsPerTurn: 240,
     rConstant: 10,
@@ -35,13 +36,10 @@ export default function Home() {
     startOffsetMin: 0,
     textSliceBase: 1000,
     turns: 15,
-    typeSpeed: 5, // in ms
+    typeSpeed: 50, // in ms
   };
 
-  const [redrawN, setRedrawN] = useState<number>(0);
-  const redraw = () => {
-    setRedrawN(redrawN + 1);
-  };
+  const handleRedraw = () => {};
 
   const handleReplay = () => {
     if (textSet.length == numberOfSpirals) {
@@ -132,7 +130,7 @@ export default function Home() {
   // runs after hydration
   useEffect(() => {
     const t = setTimeout(() => {
-      console.log("fully hydrated!");
+      //console.log("fully hydrated!");
       //handleReplay();
     }, 5000);
 
@@ -158,7 +156,6 @@ export default function Home() {
               svgRef={svgRef}
               cx={cx}
               cy={cy}
-              rdn={redrawN}
               key={key}
             />
           ))}
@@ -228,7 +225,7 @@ export default function Home() {
         </button>
 
         <button
-          onClick={() => redraw()}
+          onClick={() => handleRedraw()}
           className="bg-white/10 border border-white/20 hover:bg-white/20 text-white px-3 py-1.5 rounded-md transition"
         >
           Redraw
