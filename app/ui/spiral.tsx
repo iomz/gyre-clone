@@ -20,8 +20,9 @@ export default function Spiral({
   rdn: number;
 }) {
   const [startOffset, setStartOffset] = useState("10%");
-  const [words, setWords] = useState(["test"]);
-  const [pathId, setPathId] = useState("test");
+  const [initialFontSize, setInitialFontSize] = useState(1);
+  const [words, setWords] = useState<string[]>([]);
+  const [pathId, setPathId] = useState("");
   const pathRef = useRef<any>(null);
   const textPathRef = useRef<any>(null);
 
@@ -81,6 +82,8 @@ export default function Spiral({
   };
 
   const animate = () => {
+    // remove this spiral
+
     /* This section decides the random factors */
     // the start percentage of the spiral path
     setStartOffset(
@@ -90,10 +93,15 @@ export default function Spiral({
     const r =
       Math.floor(Math.random() * (config.rMax - config.rMin)) + config.rMin;
     // the length of the text to be rendered
-    const textSlice = config.textSliceBase + 5 * r;
+    const textSlice = config.textSliceBase + config.rConstant * r;
     // the jitter of the center position of the spiral
     const xJitter = Math.floor(Math.random() * config.jitter) - config.jitter;
     const yJitter = Math.floor(Math.random() * config.jitter) - config.jitter;
+    // the initial font size
+    setInitialFontSize(
+      Math.floor(Math.random() + config.fontMax - config.fontMin) +
+        config.fontMin,
+    );
 
     drawSpiral(r, xJitter, yJitter);
     setWords(text.slice(0, textSlice).split(" "));
@@ -108,7 +116,7 @@ export default function Spiral({
   useEffect(() => {
     // console.log(cx, cy); // somehow this runs twice as expected
     animate();
-  }, [text, cx, cy]);
+  }, [text, cx, cy, config]);
 
   return (
     <>
@@ -124,14 +132,19 @@ export default function Spiral({
         />
       </defs>
 
-      <text id="spiral-text" className="text-white font-normal">
+      <text className="text-white font-normal spiral-text">
         <textPath
           href={"#" + pathId}
           startOffset={startOffset}
           ref={textPathRef}
           style={{ opacity: 1 }}
         >
-          <Typewriter config={config} words={words} rdn={rdn} />
+          <Typewriter
+            config={config}
+            words={words}
+            initialFontSize={initialFontSize}
+            rdn={rdn}
+          />
         </textPath>
       </text>
     </>

@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useEffect, useRef, useState } from "react";
 import Config from "@/app/lib/config";
 import Spiral from "@/app/ui/spiral";
@@ -9,7 +10,7 @@ type VoiceOption = SpeechSynthesisVoice | null;
 export default function Home() {
   const [hydrated, setHydrated] = useState(false);
   const [textSet, setTextSet] = useState<string[]>([]);
-  const [length, setLength] = useState<number>(4000);
+  const [length, setLength] = useState<number>(6000);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [selectedVoice, setSelectedVoice] = useState<VoiceOption>(null);
   const [loading, setLoading] = useState(false);
@@ -17,23 +18,24 @@ export default function Home() {
   const [cx, setCx] = useState<number>(0);
   const [cy, setCy] = useState<number>(0);
   const svgRef = useRef<any>(null);
-  const config: Config = {
+  const [numberOfSpirals, setNumberOfSpirals] = useState<number>(1);
+  const config = {
     cXMax: 75,
     cXMin: 25,
     cYMax: 55,
     cYMin: 45,
-    fontSizeConstant: 0.8,
+    fontMax: 0.5, // in em
+    fontMin: 0.2, // in em
     jitter: 30,
-    numberOfSpirals: 8,
     pointsPerTurn: 240,
-    rMax: 600,
-    rMin: 250,
-    scaleConstant: 0.8, // from 1 -> 0.2
+    rConstant: 10,
+    rMax: 400,
+    rMin: 200,
     startOffsetMax: 30,
     startOffsetMin: 0,
-    textSliceBase: 900,
+    textSliceBase: 1000,
     turns: 15,
-    typeSpeed: 50, // in ms
+    typeSpeed: 5, // in ms
   };
 
   const [redrawN, setRedrawN] = useState<number>(0);
@@ -42,7 +44,7 @@ export default function Home() {
   };
 
   const handleReplay = () => {
-    if (textSet.length == config.numberOfSpirals) {
+    if (textSet.length == numberOfSpirals) {
       // TODO: implement text to speak algorithm here
       console.log("I should be speaking...");
       const text = textSet[0];
@@ -92,7 +94,7 @@ export default function Home() {
     let mounted = true;
     async function fetchText() {
       setLoading(true);
-      for (let i = 0; i < config.numberOfSpirals; i++) {
+      for (let i = 0; i < numberOfSpirals; i++) {
         let res = null;
         let data: { text: any } | null = null;
         try {
@@ -121,7 +123,7 @@ export default function Home() {
     return () => {
       mounted = false;
     };
-  }, [length, language]);
+  }, [length, language, numberOfSpirals]);
 
   useEffect(() => {
     setHydrated(true);
@@ -141,27 +143,40 @@ export default function Home() {
   return (
     <div className="relative w-screen h-screen bg-black overflow-hidden">
       {/* Fullscreen SVG */}
-      <svg
-        ref={svgRef}
-        className="w-full h-full"
-        viewBox="0 0 1600 900"
-        preserveAspectRatio="xMidYMid slice"
-      >
-        {/* numberOfSpirals distinctive spirals */}
-        {textSet.map((text, key) => (
-          <Spiral
-            config={config}
-            text={text}
-            svgRef={svgRef}
-            cx={cx}
-            cy={cy}
-            rdn={redrawN}
-            key={key}
-          />
-        ))}
-      </svg>
-
+      <Suspense>
+        <svg
+          ref={svgRef}
+          className="w-full h-full"
+          viewBox="0 0 1600 900"
+          preserveAspectRatio="xMidYMid slice"
+        >
+          {/* numberOfSpirals distinctive spirals */}
+          {textSet.map((text, key) => (
+            <Spiral
+              config={config}
+              text={text}
+              svgRef={svgRef}
+              cx={cx}
+              cy={cy}
+              rdn={redrawN}
+              key={key}
+            />
+          ))}
+        </svg>
+      </Suspense>
       <div className="absolute bottom-5 right-5 flex items-center gap-2 text-sm font-medium text-white">
+        <label className="text-gray-300">
+          Spirals:
+          <input
+            type="number"
+            value={numberOfSpirals}
+            onChange={(e) => {
+              setNumberOfSpirals(Number(e.target.value));
+            }}
+            className="ml-2 w-24 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white"
+          />
+        </label>
+
         <label className="text-gray-300">
           Length:
           <input

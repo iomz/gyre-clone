@@ -1,17 +1,17 @@
 export default function Word({
   w,
-  scale,
-  fontSizeConstant,
+  fontSize,
+  opacity,
 }: {
   w: string;
-  scale: number;
-  fontSizeConstant: number;
+  fontSize: number;
+  opacity: number;
 }) {
   return (
     <tspan
       style={{
-        fontSize: `${fontSizeConstant * scale}em`,
-        opacity: `${scale}`,
+        fontSize: `${fontSize}`,
+        opacity: `${opacity}`,
       }}
     >
       {w === " " ? "\u00A0" : w + "\u00A0"}

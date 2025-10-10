@@ -3,13 +3,13 @@ export default interface Config {
   cXMin: number;
   cYMax: number;
   cYMin: number;
-  fontSizeConstant: number;
+  fontMax: number;
+  fontMin: number;
   jitter: number;
-  numberOfSpirals: number;
   pointsPerTurn: number;
+  rConstant: number;
   rMax: number;
   rMin: number;
-  scaleConstant: number;
   startOffsetMax: number;
   startOffsetMin: number;
   textSliceBase: number;
