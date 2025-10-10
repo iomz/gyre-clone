@@ -1,0 +1,12 @@
+---
+services:
+  gyre-clone:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: gyre-clone
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9999:3000"
+    environment:
+      TZ: "Asia/Tokyo"

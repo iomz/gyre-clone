@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, RefObject } from "react";
-import Config from "@/components/config";
+import Config from "@/app/lib/config";
 import Typewriter from "@/app/ui/typewriter";
 
 export default function Spiral({
