@@ -8,14 +8,14 @@ export default function Spiral({
   config,
   text,
   svgRef,
-  cx,
-  cy,
+  center,
+  delay,
 }: {
   config: Config;
   text: string;
   svgRef: RefObject<any>;
-  cx: number;
-  cy: number;
+  center: Center;
+  delay: number;
 }) {
   const [startOffset, setStartOffset] = useState<string>("10%");
   const [initialFontSize, setInitialFontSize] = useState<number>(1);
@@ -70,8 +70,7 @@ export default function Spiral({
     const yJitter = Math.floor(Math.random() * config.jitter) - config.jitter;
     // the initial font size
     setInitialFontSize(
-      Math.floor(Math.random() + config.fontMax - config.fontMin) +
-        config.fontMin,
+      Math.random() * (config.fontMax - config.fontMin) + config.fontMin,
     );
 
     /* draw spiral */
@@ -88,16 +87,16 @@ export default function Spiral({
     );
     const width = parseFloat(svg.viewBox.baseVal.width);
     const height = parseFloat(svg.viewBox.baseVal.height);
-    const center = {
-      x: cx * (width / 100) + xJitter,
-      y: cy * (height / 100) + yJitter,
+    const spiralCenter = {
+      x: center.x * (width / 100) + xJitter,
+      y: center.y * (height / 100) + yJitter,
     };
 
     // generate the d for the spiral
-    const d = buildClockwiseSpiral(r, center);
+    const d = buildClockwiseSpiral(r, spiralCenter);
     path.setAttribute("d", d);
 
-    // build the text to be displayed
+    /* build the text to be displayed */
     setWords(text.slice(0, textSlice).split(" "));
 
     const textEl = textPathRef.current;
@@ -108,9 +107,12 @@ export default function Spiral({
   };
 
   useEffect(() => {
-    console.log(cx, cy, text.length); // somehow this runs twice as expected
-    animate();
-  }, [text]);
+    const t = setTimeout(() => {
+      animate();
+    }, delay);
+    // cleanup
+    return () => clearTimeout(t);
+  }, [text, center]);
 
   return (
     <>

@@ -24,7 +24,6 @@ export default function Typewriter({
   useEffect(() => {
     if (index < words.length) {
       /* draw each word */
-      //console.log(`${index} / ${words.length}`);
       const timer = setTimeout(() => {
         const fontSize = (1 - index / words.length) * initialFontSize;
         const opacity = 1 - index / words.length;

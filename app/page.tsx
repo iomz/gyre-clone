@@ -2,6 +2,7 @@
 
 import { Suspense } from "react";
 import { useEffect, useRef, useState } from "react";
+import { Center } from "@/app/lib/types";
 import Spiral from "@/app/ui/spiral";
 
 type VoiceOption = SpeechSynthesisVoice | null;
@@ -14,35 +15,37 @@ export default function Home() {
   const [selectedVoice, setSelectedVoice] = useState<VoiceOption>(null);
   const [loading, setLoading] = useState(false);
   const [language, setLanguage] = useState<string>("en-US");
-  const [cx, setCx] = useState<number>(0);
-  const [cy, setCy] = useState<number>(0);
+  const [center, setCenter] = useState<Center>({ x: 100, y: 100 });
   const svgRef = useRef<any>(null);
-  const [numberOfSpirals, setNumberOfSpirals] = useState<number>(4);
   const config = {
     cXMax: 75,
     cXMin: 25,
     cYMax: 55,
     cYMin: 45,
+    delayMax: 60,
     fadeoutRate: 0.01,
     fadeoutSpeed: 500,
-    fontMax: 0.4, // in em
+    fontMax: 0.8, // in em
     fontMin: 0.3, // in em
     jitter: 30,
+    numberOfSpirals: 10,
     pointsPerTurn: 240,
     rConstant: 10,
-    rMax: 400,
-    rMin: 200,
-    startOffsetMax: 30,
+    rMax: 500,
+    rMin: 175,
+    startOffsetMax: 25,
     startOffsetMin: 0,
     textSliceBase: 1000,
     turns: 15,
-    typeSpeed: 50, // in ms
+    typeSpeed: 10, // in ms
   };
 
-  const handleRedraw = () => {};
+  const handleRedraw = () => {
+    randomizeCenter();
+  };
 
   const handleReplay = () => {
-    if (textSet.length == numberOfSpirals) {
+    if (textSet.length == config.numberOfSpirals) {
       // TODO: implement text to speak algorithm here
       console.log("I should be speaking...");
       const text = textSet[0];
@@ -60,14 +63,17 @@ export default function Home() {
     }
   };
 
-  useEffect(() => {
+  const randomizeCenter = () => {
     /* randomize the center position */
-    setCx(
-      Math.floor(Math.random() * (config.cXMax - config.cXMin)) + config.cXMin,
-    );
-    setCy(
-      Math.floor(Math.random() * (config.cYMax - config.cYMin)) + config.cYMin,
-    );
+    const cx =
+      Math.floor(Math.random() * (config.cXMax - config.cXMin)) + config.cXMin;
+    const cy =
+      Math.floor(Math.random() * (config.cYMax - config.cYMin)) + config.cYMin;
+    setCenter({ x: cx, y: cy });
+  };
+
+  useEffect(() => {
+    randomizeCenter();
   }, []);
 
   // load voices
@@ -92,7 +98,7 @@ export default function Home() {
     let mounted = true;
     async function fetchText() {
       setLoading(true);
-      for (let i = 0; i < numberOfSpirals; i++) {
+      for (let i = 0; i < config.numberOfSpirals; i++) {
         let res = null;
         let data: { text: any } | null = null;
         try {
@@ -121,7 +127,7 @@ export default function Home() {
     return () => {
       mounted = false;
     };
-  }, [length, language, numberOfSpirals]);
+  }, [length, language, config.numberOfSpirals]);
 
   useEffect(() => {
     setHydrated(true);
@@ -154,9 +160,9 @@ export default function Home() {
               config={config}
               text={text}
               svgRef={svgRef}
-              cx={cx}
-              cy={cy}
+              center={center}
               key={key}
+              delay={Math.floor(Math.random() * config.delayMax) * 1000}
             />
           ))}
         </svg>
@@ -166,9 +172,9 @@ export default function Home() {
           Spirals:
           <input
             type="number"
-            value={numberOfSpirals}
+            value={config.numberOfSpirals}
             onChange={(e) => {
-              setNumberOfSpirals(Number(e.target.value));
+              config.numberOfSpirals = Number(e.target.value);
             }}
             className="ml-2 w-24 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white"
           />
