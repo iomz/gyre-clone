@@ -6,11 +6,11 @@ import Word from "@/app/ui/word";
 
 export default function Typewriter({
   config,
-  words,
+  text,
   initialFontSize,
 }: {
   config: Config;
-  words: string[];
+  text: string;
   initialFontSize: number;
 }) {
   const [index, setIndex] = useState(0);
@@ -22,16 +22,16 @@ export default function Typewriter({
   };
 
   useEffect(() => {
-    if (index < words.length) {
+    if (index < text.length) {
       /* draw each word */
       const timer = setTimeout(() => {
-        const fontSize = (1 - index / words.length) * initialFontSize;
-        const opacity = 1 - index / words.length;
-        addWord(words[index], `${fontSize}em`, opacity);
+        const fontSize = (1 - index / text.length) * initialFontSize;
+        const opacity = 1 - index / text.length;
+        addWord(text[index], `${fontSize}em`, opacity);
         setIndex(index + 1);
       }, config.typeSpeed);
       return () => clearTimeout(timer);
-    } else if (index == words.length && index != 0 && opacityRate > 0) {
+    } else if (index == text.length && index != 0 && opacityRate > 0) {
       /* fade out the text after finished typing */
       const timer = setTimeout(() => {
         const newOpacityRate = opacityRate - config.fadeoutRate;
@@ -39,7 +39,7 @@ export default function Typewriter({
       }, config.fadeoutSpeed);
       return () => clearTimeout(timer);
     }
-  }, [index, opacityRate, words]);
+  }, [index, opacityRate, text]);
 
   return (
     <>

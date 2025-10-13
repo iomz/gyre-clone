@@ -20,6 +20,7 @@ export interface Config {
   startOffsetMax: number;
   startOffsetMin: number;
   textSliceBase: number;
-  turns: number;
+  turnMax: number;
+  turnMin: number;
   typeSpeed: number;
 }

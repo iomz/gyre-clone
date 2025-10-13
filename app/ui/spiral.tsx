@@ -19,14 +19,16 @@ export default function Spiral({
 }) {
   const [startOffset, setStartOffset] = useState<string>("10%");
   const [initialFontSize, setInitialFontSize] = useState<number>(1);
-  const [words, setWords] = useState<string[]>([]);
   const [pathId, setPathId] = useState<string>("");
+  const [slicedText, setSlicedText] = useState<string>("");
   const pathRef = useRef<any>(null);
   const textPathRef = useRef<any>(null);
 
   const buildClockwiseSpiral = (r: number, center: Center) => {
     const maxR = r;
-    const turns = config.turns;
+    const turns =
+      Math.floor(Math.random() * (config.turnMax - config.turnMin)) +
+      config.turnMin;
     const thetaMax = Math.PI * 2 * turns;
     const b = maxR / thetaMax;
 
@@ -97,7 +99,8 @@ export default function Spiral({
     path.setAttribute("d", d);
 
     /* build the text to be displayed */
-    setWords(text.slice(0, textSlice).split(" "));
+    //setWords(text.slice(0, textSlice).split(" "));
+    setSlicedText(text.slice(0, textSlice));
 
     const textEl = textPathRef.current;
     if (!path || !textEl) return;
@@ -137,7 +140,7 @@ export default function Spiral({
         >
           <Typewriter
             config={config}
-            words={words}
+            text={slicedText}
             initialFontSize={initialFontSize}
           />
         </textPath>

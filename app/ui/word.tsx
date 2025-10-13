@@ -14,7 +14,7 @@ export default function Word({
         opacity: `${opacity}`,
       }}
     >
-      {w === " " ? "\u00A0" : w + "\u00A0"}
+      {w === " " ? "\u00A0" : w}
     </tspan>
   );
 }

@@ -36,8 +36,9 @@ export default function Home() {
     startOffsetMax: 25,
     startOffsetMin: 0,
     textSliceBase: 1000,
-    turns: 15,
-    typeSpeed: 10, // in ms
+    turnMax: 15,
+    turnMin: 8,
+    typeSpeed: 1, // in ms
   };
 
   const handleRedraw = () => {
