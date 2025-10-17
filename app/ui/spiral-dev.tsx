@@ -1,30 +1,33 @@
 "use client";
 
 import { useEffect, useRef, useState, RefObject } from "react";
-import { Center, Config } from "@/app/lib/types";
-import Typewriter from "@/app/ui/typewriter";
+import { Center, ConfigDev } from "@/app/lib/types";
 
 export default function Spiral({
   config,
   text,
+  length,
   svgRef,
-  center,
-  delay,
+  maxR,
+  turns,
+  startOffset,
+  initialFontSize,
+  opacityRate,
 }: {
-  config: Config;
+  config: ConfigDev;
   text: string;
+  length: number;
   svgRef: RefObject<any>;
-  center: Center;
-  delay: number;
+  maxR: number;
+  turns: number;
+  startOffset: number;
+  initialFontSize: number;
+  opacityRate: number;
 }) {
-  const [startOffset, setStartOffset] = useState<string>("10%");
-  const [initialFontSize, setInitialFontSize] = useState<number>(1);
   const [pathId, setPathId] = useState<string>("");
   const [slicedText, setSlicedText] = useState<string>("");
   const pathRef = useRef<any>(null);
   const textPathRef = useRef<any>(null);
-  const [index, setIndex] = useState(0);
-  const [opacityRate, setOpacityRate] = useState(1);
 
   const addWord = (w: string, fontSize: number, opacity: number) => {
     const tspan = document.createElementNS(
@@ -38,11 +41,7 @@ export default function Spiral({
     //console.log(tspan.textContent);
   };
 
-  const buildClockwiseSpiral = (r: number, center: Center) => {
-    const maxR = r;
-    const turns =
-      Math.floor(Math.random() * (config.turnMax - config.turnMin)) +
-      config.turnMin;
+  const buildClockwiseSpiral = (center: Center) => {
     const thetaMax = Math.PI * 2 * turns;
     const b = maxR / thetaMax;
 
@@ -68,27 +67,7 @@ export default function Spiral({
     return d;
   };
 
-  const animate = () => {
-    // remove this spiral
-
-    /* This section decides the random factors */
-    // the start percentage of the spiral path
-    setStartOffset(
-      `${Math.floor(Math.random() * config.startOffsetMax) + config.startOffsetMin}%`,
-    );
-    // the r of the spiral
-    const r =
-      Math.floor(Math.random() * (config.rMax - config.rMin)) + config.rMin;
-    // the length of the text to be rendered
-    const textSlice = config.textSliceBase + config.rConstant * r;
-    // the jitter of the center position of the spiral
-    const xJitter = Math.floor(Math.random() * config.jitter) - config.jitter;
-    const yJitter = Math.floor(Math.random() * config.jitter) - config.jitter;
-    // the initial font size
-    setInitialFontSize(
-      Math.random() * (config.fontMax - config.fontMin) + config.fontMin,
-    );
-
+  useEffect(() => {
     /* draw spiral */
     const svg = svgRef.current;
     const path = pathRef.current;
@@ -104,52 +83,42 @@ export default function Spiral({
     const width = parseFloat(svg.viewBox.baseVal.width);
     const height = parseFloat(svg.viewBox.baseVal.height);
     const spiralCenter = {
-      x: center.x * (width / 100) + xJitter,
-      y: center.y * (height / 100) + yJitter,
+      x: width / 2,
+      y: height / 2,
     };
 
     // generate the d for the spiral
-    const d = buildClockwiseSpiral(r, spiralCenter);
+    const d = buildClockwiseSpiral(spiralCenter);
     path.setAttribute("d", d);
 
     /* build the text to be displayed */
     //setWords(text.slice(0, textSlice).split(" "));
-    setSlicedText(text.slice(0, textSlice));
+    setSlicedText(text.slice(0, length));
 
     const textEl = textPathRef.current;
     if (!path || !textEl) return;
 
     // set a unique id for the path
     setPathId(Math.random().toString(36).replace("0.", ""));
-  };
+  }, [text, length, maxR, turns, startOffset, initialFontSize]);
 
   useEffect(() => {
-    const t = setTimeout(() => {
-      animate();
-    }, delay);
-    // cleanup
-    return () => clearTimeout(t);
-  }, [text, center]);
-
-  useEffect(() => {
-    if (index < slicedText.length) {
-      /* draw each word */
-      const timer = setTimeout(() => {
-        const fontSize = (1 - index / text.length) * initialFontSize;
-        const opacity = 1 - index / text.length;
-        addWord(slicedText[index], fontSize, opacity);
-        setIndex(index + 1);
-      }, config.typeSpeed);
-      return () => clearTimeout(timer);
-    } else if (index == slicedText.length && index != 0 && opacityRate > 0) {
-      /* fade out the text after finished typing */
-      const timer = setTimeout(() => {
-        const newOpacityRate = opacityRate - config.fadeoutRate;
-        setOpacityRate(newOpacityRate);
-      }, config.fadeoutSpeed);
-      return () => clearTimeout(timer);
+    for (let index = 0; index < slicedText.length && index < length; index++) {
+      const fontSize = (1 - index / slicedText.length) * initialFontSize;
+      const opacity = 1 - (index / slicedText.length) * opacityRate;
+      addWord(slicedText[index], fontSize, opacity);
     }
-  }, [index, opacityRate, slicedText]);
+  }, [slicedText, length]);
+
+  useEffect(() => {
+    const tspans = textPathRef.current.children;
+    for (let index = 0; index < tspans.length && index < length; index++) {
+      const fontSize = (1 - index / tspans.length) * initialFontSize;
+      const opacity = 1 - (index / tspans.length) * opacityRate;
+      tspans[index].style.fontSize = `${fontSize}em`;
+      tspans[index].style.opacity = `${opacity}`;
+    }
+  }, [initialFontSize, opacityRate, length]);
 
   return (
     <>
@@ -168,7 +137,7 @@ export default function Spiral({
       <text className="text-white font-normal spiral-text">
         <textPath
           href={"#" + pathId}
-          startOffset={startOffset}
+          startOffset={`${startOffset}%`}
           ref={textPathRef}
           style={{ opacity: 1 }}
         ></textPath>

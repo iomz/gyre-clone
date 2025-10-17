@@ -24,3 +24,10 @@ export interface Config {
   turnMin: number;
   typeSpeed: number;
 }
+
+export interface ConfigDev {
+  pointsPerTurn: number;
+  rConstant: number;
+  textSliceBase: number;
+  typeSpeed: number;
+}
