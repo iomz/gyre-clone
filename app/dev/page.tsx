@@ -6,13 +6,11 @@ import Spiral from "@/app/ui/spiral-dev";
 
 export default function Home() {
   const [text, setText] = useState<string>("");
-  const [length, setLength] = useState<number>(1000);
   const [maxR, setMaxR] = useState<number>(250);
   const [turns, setTurns] = useState<number>(6);
   const [startOffset, setStartOffset] = useState<number>(10);
   const [initialFontSize, setInitialFontSize] = useState<number>(1.0);
-  const [opacityRate, setOpacityRate] = useState<number>(1.0);
-  const [cutoffR, setCutoffR] = useState<number>(100);
+  const [cutoffR, setCutoffR] = useState<number>(80);
 
   const svgRef = useRef<any>(null);
   const config = {
@@ -28,7 +26,7 @@ export default function Home() {
       let res = null;
       let data: { text: any } | null = null;
       try {
-        res = await fetch(`/api/text?length=${length}`);
+        res = await fetch(`/api/text`);
         data = await res.json();
         if (data) {
           // @ts-ignore
@@ -41,7 +39,7 @@ export default function Home() {
       }
     }
     fetchText();
-  }, [length]);
+  }, []);
 
   return (
     <div className="relative w-screen h-screen bg-black overflow-hidden">
@@ -56,13 +54,11 @@ export default function Home() {
           <Spiral
             config={config}
             text={text}
-            length={length}
             svgRef={svgRef}
             maxR={maxR}
             turns={turns}
             startOffset={startOffset}
             initialFontSize={initialFontSize}
-            opacityRate={opacityRate}
             cutoffR={cutoffR}
           />
         </svg>
@@ -120,19 +116,6 @@ export default function Home() {
           className="ml-2 w-24 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white"
         />
 
-        <label className="text-gray-300">opacityRate: {opacityRate}</label>
-        <input
-          type="range"
-          value={opacityRate}
-          max={10}
-          min={1}
-          step={0.1}
-          onChange={(e) => {
-            setOpacityRate(Number(e.target.value));
-          }}
-          className="ml-2 w-24 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white"
-        />
-
         <label className="text-gray-300">
           initialFontSize: {initialFontSize}
         </label>
@@ -145,17 +128,6 @@ export default function Home() {
           onChange={(e) => {
             setInitialFontSize(Number(e.target.value));
           }}
-          className="ml-2 w-24 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white"
-        />
-
-        <label className="text-gray-300">Length: {length}</label>
-        <input
-          type="range"
-          value={length}
-          max={6000}
-          min={100}
-          step={100}
-          onChange={(e) => setLength(Number(e.target.value))}
           className="ml-2 w-24 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white"
         />
       </div>

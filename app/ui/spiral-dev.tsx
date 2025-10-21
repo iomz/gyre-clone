@@ -6,32 +6,29 @@ import { Center, ConfigDev } from "@/app/lib/types";
 export default function Spiral({
   config,
   text,
-  length,
   svgRef,
   maxR,
   turns,
   startOffset,
   initialFontSize,
-  opacityRate,
   cutoffR,
 }: {
   config: ConfigDev;
   text: string;
-  length: number;
   svgRef: RefObject<any>;
   maxR: number;
   turns: number;
   startOffset: number;
   initialFontSize: number;
-  opacityRate: number;
   cutoffR: number;
 }) {
   const [pathId, setPathId] = useState<string>("");
-  const [slicedText, setSlicedText] = useState<string>("");
+  const [ptsLength, setPtsLength] = useState<number>(0);
+  const [mounted, setMounted] = useState<boolean>(false);
   const pathRef = useRef<any>(null);
   const textPathRef = useRef<any>(null);
 
-  const addWord = (w: string, fontSize: number, opacity: number) => {
+  const addTspan = (w: string, fontSize: number, opacity: number = 0) => {
     const tspan = document.createElementNS(
       "http://www.w3.org/2000/svg",
       "tspan",
@@ -63,6 +60,7 @@ export default function Spiral({
     }
 
     console.log("pts.lenth: ", pts.length);
+    setPtsLength(pts.length);
     pts.reverse(); // draw inward
 
     let d = "";
@@ -97,34 +95,41 @@ export default function Spiral({
     const d = buildClockwiseSpiral(spiralCenter);
     path.setAttribute("d", d);
 
-    /* build the text to be displayed */
-    //setWords(text.slice(0, textSlice).split(" "));
-    setSlicedText(text.slice(0, length));
-
     const textEl = textPathRef.current;
     if (!path || !textEl) return;
 
     // set a unique id for the path
     setPathId(Math.random().toString(36).replace("0.", ""));
-  }, [text, length, maxR, turns, startOffset, initialFontSize, cutoffR]);
+  }, [text, maxR, turns, startOffset, initialFontSize, cutoffR]);
 
   useEffect(() => {
-    for (let index = 0; index < slicedText.length && index < length; index++) {
-      const fontSize = (1 - index / slicedText.length) * initialFontSize;
-      const opacity = 1 - (index / slicedText.length) * opacityRate;
-      addWord(slicedText[index], fontSize, opacity);
+    // populate the spiral text
+    let cumulativeLength = 0;
+    for (let index = 0; index < text.length; index++) {
+      if (cumulativeLength > ptsLength) {
+        break;
+      }
+      const fontSize = (1 - cumulativeLength / ptsLength) * initialFontSize;
+      cumulativeLength += (fontSize * Math.PI) / 2;
+      addTspan(text[index], fontSize);
     }
-  }, [slicedText, length]);
+    setMounted(true);
+    console.log("cumulativeLength: ", cumulativeLength);
 
-  useEffect(() => {
+    // set the opacity for each character for typewriter effect
     const tspans = textPathRef.current.children;
-    for (let index = 0; index < tspans.length && index < length; index++) {
-      const fontSize = (1 - index / tspans.length) * initialFontSize;
-      const opacity = 1 - (index / tspans.length) * opacityRate;
+    cumulativeLength = 0;
+    for (let index = 0; index < tspans.length; index++) {
+      if (cumulativeLength > ptsLength) {
+        break;
+      }
+      const fontSize = (1 - cumulativeLength / ptsLength) * initialFontSize;
+      cumulativeLength += (fontSize * Math.PI) / 2;
+      const opacity = 1 - cumulativeLength / ptsLength;
       tspans[index].style.fontSize = `${fontSize}em`;
       tspans[index].style.opacity = `${opacity}`;
     }
-  }, [initialFontSize, opacityRate, length]);
+  }, [text, initialFontSize, ptsLength, mounted]);
 
   return (
     <>
