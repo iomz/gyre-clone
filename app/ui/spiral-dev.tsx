@@ -13,6 +13,7 @@ export default function Spiral({
   startOffset,
   initialFontSize,
   opacityRate,
+  cutoffR,
 }: {
   config: ConfigDev;
   text: string;
@@ -23,6 +24,7 @@ export default function Spiral({
   startOffset: number;
   initialFontSize: number;
   opacityRate: number;
+  cutoffR: number;
 }) {
   const [pathId, setPathId] = useState<string>("");
   const [slicedText, setSlicedText] = useState<string>("");
@@ -52,11 +54,15 @@ export default function Spiral({
       const t = i / totalPoints;
       const theta = t * thetaMax;
       const r = b * theta;
+      if (r < cutoffR) {
+        continue;
+      }
       const x = center.x + r * Math.cos(theta);
       const y = center.y - r * Math.sin(theta); // clockwise
       pts.push([x, y]);
     }
 
+    console.log("pts.lenth: ", pts.length);
     pts.reverse(); // draw inward
 
     let d = "";
@@ -100,7 +106,7 @@ export default function Spiral({
 
     // set a unique id for the path
     setPathId(Math.random().toString(36).replace("0.", ""));
-  }, [text, length, maxR, turns, startOffset, initialFontSize]);
+  }, [text, length, maxR, turns, startOffset, initialFontSize, cutoffR]);
 
   useEffect(() => {
     for (let index = 0; index < slicedText.length && index < length; index++) {

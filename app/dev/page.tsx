@@ -12,6 +12,7 @@ export default function Home() {
   const [startOffset, setStartOffset] = useState<number>(10);
   const [initialFontSize, setInitialFontSize] = useState<number>(1.0);
   const [opacityRate, setOpacityRate] = useState<number>(1.0);
+  const [cutoffR, setCutoffR] = useState<number>(100);
 
   const svgRef = useRef<any>(null);
   const config = {
@@ -62,10 +63,24 @@ export default function Home() {
             startOffset={startOffset}
             initialFontSize={initialFontSize}
             opacityRate={opacityRate}
+            cutoffR={cutoffR}
           />
         </svg>
       </Suspense>
       <div className="absolute bottom-5 right-5 flex items-center gap-2 text-sm font-medium text-white">
+        <label className="text-gray-300">cutoffR: {cutoffR}</label>
+        <input
+          type="range"
+          value={cutoffR}
+          max={300}
+          min={0}
+          step={10}
+          onChange={(e) => {
+            setCutoffR(Number(e.target.value));
+          }}
+          className="ml-2 w-24 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white"
+        />
+
         <label className="text-gray-300">startOffset: {startOffset}</label>
         <input
           type="range"
