@@ -27,7 +27,5 @@ export interface Config {
 
 export interface ConfigDev {
   pointsPerTurn: number;
-  rConstant: number;
-  textSliceBase: number;
   typeSpeed: number;
 }

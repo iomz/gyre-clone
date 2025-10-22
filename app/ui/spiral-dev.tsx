@@ -24,7 +24,8 @@ export default function Spiral({
 }) {
   const [pathId, setPathId] = useState<string>("");
   const [ptsLength, setPtsLength] = useState<number>(0);
-  const [mounted, setMounted] = useState<boolean>(false);
+  const [index, setIndex] = useState<number>(-1);
+  const [length, setLength] = useState<number>(0);
   const pathRef = useRef<any>(null);
   const textPathRef = useRef<any>(null);
 
@@ -59,7 +60,7 @@ export default function Spiral({
       pts.push([x, y]);
     }
 
-    console.log("pts.lenth: ", pts.length);
+    //console.log("pts.lenth: ", pts.length);
     setPtsLength(pts.length);
     pts.reverse(); // draw inward
 
@@ -103,6 +104,9 @@ export default function Spiral({
   }, [text, maxR, turns, startOffset, initialFontSize, cutoffR]);
 
   useEffect(() => {
+    const tspans = textPathRef.current.children;
+    if (tspans.length > 0) {
+    }
     // populate the spiral text
     let cumulativeLength = 0;
     for (let index = 0; index < text.length; index++) {
@@ -112,24 +116,27 @@ export default function Spiral({
       const fontSize = (1 - cumulativeLength / ptsLength) * initialFontSize;
       cumulativeLength += (fontSize * Math.PI) / 2;
       addTspan(text[index], fontSize);
+      setIndex(0);
     }
-    setMounted(true);
-    console.log("cumulativeLength: ", cumulativeLength);
+  }, [text, initialFontSize, ptsLength]);
 
+  useEffect(() => {
+    //console.log("cumulativeLength: ", cumulativeLength);
     // set the opacity for each character for typewriter effect
     const tspans = textPathRef.current.children;
-    cumulativeLength = 0;
-    for (let index = 0; index < tspans.length; index++) {
-      if (cumulativeLength > ptsLength) {
-        break;
-      }
-      const fontSize = (1 - cumulativeLength / ptsLength) * initialFontSize;
-      cumulativeLength += (fontSize * Math.PI) / 2;
-      const opacity = 1 - cumulativeLength / ptsLength;
+    if (length > tspans.length || length > ptsLength || index < 0) {
+      return;
+    }
+    const timer = setTimeout(() => {
+      const fontSize = (1 - length / ptsLength) * initialFontSize;
+      setLength(length + (fontSize * Math.PI) / 2);
+      const opacity = 1 - length / ptsLength;
       tspans[index].style.fontSize = `${fontSize}em`;
       tspans[index].style.opacity = `${opacity}`;
-    }
-  }, [text, initialFontSize, ptsLength, mounted]);
+      setIndex(index + 1);
+    }, config.typeSpeed);
+    return () => clearTimeout(timer);
+  }, [index]);
 
   return (
     <>

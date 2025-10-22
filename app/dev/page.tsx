@@ -15,9 +15,7 @@ export default function Home() {
   const svgRef = useRef<any>(null);
   const config = {
     pointsPerTurn: 240,
-    rConstant: 10,
-    textSliceBase: 1000,
-    typeSpeed: 1, // in ms
+    typeSpeed: 50, // in ms
   };
 
   // fetch text from API
