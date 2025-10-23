@@ -18,27 +18,23 @@ export default function Home() {
   const [center, setCenter] = useState<Center>({ x: 100, y: 100 });
   const svgRef = useRef<any>(null);
   const config = {
+    cutoffR: 80,
     cXMax: 75,
     cXMin: 25,
     cYMax: 55,
     cYMin: 45,
-    delayMax: 60,
-    fadeoutRate: 0.01,
-    fadeoutSpeed: 500,
-    fontMax: 0.8, // in em
+    fontMax: 1.0, // in em
     fontMin: 0.3, // in em
     jitter: 30,
     numberOfSpirals: 10,
     pointsPerTurn: 240,
-    rConstant: 10,
     rMax: 500,
-    rMin: 175,
-    startOffsetMax: 25,
+    rMin: 200,
+    startOffsetMax: 15,
     startOffsetMin: 0,
-    textSliceBase: 1000,
-    turnMax: 15,
-    turnMin: 8,
-    typeSpeed: 1, // in ms
+    turnMax: 10,
+    turnMin: 6,
+    typeSpeed: 0, // in ms
   };
 
   const handleRedraw = () => {
@@ -158,12 +154,11 @@ export default function Home() {
           {/* numberOfSpirals distinctive spirals */}
           {textSet.map((text, key) => (
             <Spiral
-              config={config}
-              text={text}
               svgRef={svgRef}
+              config={config}
               center={center}
+              text={text}
               key={key}
-              delay={Math.floor(Math.random() * config.delayMax) * 1000}
             />
           ))}
         </svg>

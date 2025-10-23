@@ -70,8 +70,13 @@ export default function Spiral({
     return d;
   };
 
+  /* set up the spiral
+   * text -> the text to display
+   * center -> the center of the spiral
+   *
+   * */
   useEffect(() => {
-    /* draw spiral */
+    /* get the svg and path ref */
     const svg = svgRef.current;
     const path = pathRef.current;
     if (!svg || !path) return;
@@ -101,9 +106,14 @@ export default function Spiral({
     setPathId(Math.random().toString(36).replace("0.", ""));
   }, [text, maxR, turns, startOffset, initialFontSize, cutoffR]);
 
+  /* populate the tspans along the spiral path
+   * circumference -> the perimeter of the spiral calculated during the build
+   *
+   * */
   useEffect(() => {
     const tspans = textPathRef.current.children;
     if (tspans.length > 0) {
+      return;
     }
     // populate the spiral text
     let cumulativeLength = 0;
@@ -118,10 +128,20 @@ export default function Spiral({
     }
   }, [text, initialFontSize, circumference]);
 
+  /* set the opacity to realize the typewriter effect
+   * index -> used for the timer
+   *
+   * */
   useEffect(() => {
     // set the opacity for each character for typewriter effect
     const tspans = textPathRef.current.children;
-    if (length > tspans.length || length > circumference || index < 0) {
+    console.log(tspans.length, length, circumference);
+    if (
+      tspans.length == 0 ||
+      length > tspans.length ||
+      length > circumference ||
+      index < 0
+    ) {
       return;
     }
     const timer = setTimeout(() => {

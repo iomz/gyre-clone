@@ -4,22 +4,20 @@ export interface Center {
 }
 
 export interface Config {
+  cutoffR: number;
   cXMax: number;
   cXMin: number;
   cYMax: number;
   cYMin: number;
-  fadeoutRate: number;
-  fadeoutSpeed: number;
   fontMax: number;
   fontMin: number;
   jitter: number;
+  numberOfSpirals: number;
   pointsPerTurn: number;
-  rConstant: number;
   rMax: number;
   rMin: number;
   startOffsetMax: number;
   startOffsetMin: number;
-  textSliceBase: number;
   turnMax: number;
   turnMin: number;
   typeSpeed: number;
