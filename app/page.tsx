@@ -26,15 +26,15 @@ export default function Home() {
     fontMax: 1.0, // in em
     fontMin: 0.3, // in em
     jitter: 30,
-    numberOfSpirals: 10,
+    numberOfSpirals: 6,
     pointsPerTurn: 240,
-    rMax: 500,
-    rMin: 200,
+    rMax: 400,
+    rMin: 150,
     startOffsetMax: 15,
     startOffsetMin: 0,
-    turnMax: 10,
+    turnMax: 12,
     turnMin: 6,
-    typeSpeed: 0, // in ms
+    typeSpeed: 50, // in ms
   };
 
   const handleRedraw = () => {

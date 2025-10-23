@@ -18,7 +18,6 @@ export default function Spiral({
   const [initialFontSize, setInitialFontSize] = useState<number>(1);
   const [pathId, setPathId] = useState<string>("");
   const [circumference, setCircumference] = useState<number>(0);
-  const [length, setLength] = useState<number>(0);
   const [index, setIndex] = useState(0);
   const pathRef = useRef<any>(null);
   const textPathRef = useRef<any>(null);
@@ -153,14 +152,15 @@ export default function Spiral({
     if (tspans.length > 0) {
       return;
     }
+    if (circumference == 0) {
+      return;
+    }
     // populate the spiral text
-    let cumulativeLength = 0;
     for (let index = 0; index < text.length; index++) {
-      if (cumulativeLength > circumference) {
+      if (index > circumference) {
         break;
       }
-      const fontSize = (1 - cumulativeLength / circumference) * initialFontSize;
-      cumulativeLength += (fontSize * Math.PI) / 2;
+      const fontSize = (1 - index / circumference) * initialFontSize;
       addChar(textPathRef, text[index], fontSize);
     }
     setIndex(0);
@@ -172,20 +172,18 @@ export default function Spiral({
    * */
   useEffect(() => {
     const tspans = textPathRef.current.children;
+    //console.log(circumference, tspans.length, index);
     if (
       circumference == 0 ||
-      tspans.length == 0 ||
-      length > tspans.length ||
-      length > circumference ||
+      tspans.length < 2 ||
+      index > tspans.length ||
+      index > circumference ||
       index < 0
     ) {
       return;
     }
     const timer = setTimeout(() => {
-      const fontSize = (1 - length / circumference) * initialFontSize;
-      setLength(length + (fontSize * Math.PI) / 2);
-      const opacity = 1 - length / circumference;
-      tspans[index].style.fontSize = `${fontSize}em`;
+      const opacity = 1 - index / tspans.length;
       tspans[index].style.opacity = `${opacity}`;
       setIndex(index + 1);
     }, config.typeSpeed);
