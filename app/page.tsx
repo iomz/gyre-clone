@@ -2,44 +2,71 @@
 
 import { Suspense } from "react";
 import { useContext, useEffect, useRef, useState } from "react";
-import { Center, CenterContext, SpiralContext } from "@/app/lib/definitions";
+import { Center, SpiralContext, TriggerContext } from "@/app/lib/definitions";
 import Spiral from "@/app/ui/spiral";
 
 type VoiceOption = SpeechSynthesisVoice | null;
 
 export default function Home() {
+  const [spirals, setSpirals] = useState<React.JSX.Element[]>([]);
   const [hydrated, setHydrated] = useState(false);
-  const [textSet, setTextSet] = useState<string[]>([]);
-  const [length, setLength] = useState<number>(6000);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [selectedVoice, setSelectedVoice] = useState<VoiceOption>(null);
-  const [loading, setLoading] = useState(false);
   const [language, setLanguage] = useState<string>("en-US");
   const [center, setCenter] = useState<Center>({ x: 100, y: 100 });
   const svgRef = useRef<any>(null);
   const config = useContext(SpiralContext);
+
+  async function fetchText() {
+    let res = null;
+    let data: { text: any } | null = null;
+    try {
+      res = await fetch(`/api/text?language=${encodeURIComponent(language)}`);
+      data = await res.json();
+      if (data) {
+        return data.text ?? "";
+      }
+    } catch (e) {
+      const text = "text fetch server is down";
+      return text;
+    }
+  }
+
   const handleRedraw = () => {
     randomizeCenter();
   };
 
-  const handleReplay = () => {
-    if (textSet.length == config.numberOfSpirals) {
-      // TODO: implement text to speak algorithm here
-      console.log("I should be speaking...");
-      const text = textSet[0];
-      const utter = new SpeechSynthesisUtterance(text);
-      utter.voice = selectedVoice ?? null;
-      utter.lang = language;
-      utter.pitch = 1;
-      utter.rate = 1;
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(utter);
+  const handleReplay = async () => {
+    const text = await fetchText();
+    // TODO: implement text to speak algorithm here
+    console.log("I should be speaking...");
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.voice = selectedVoice ?? null;
+    utter.lang = language;
+    utter.pitch = 0.8;
+    utter.rate = 0.8;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utter);
 
-      utter.onend = () => {
-        setTimeout(() => handleReplay(), 5000); // wait 5 seconds after speech ends
-      };
-    }
+    utter.onend = () => {
+      setTimeout(() => handleReplay(), 5000); // wait 5 seconds after speech ends
+    };
   };
+
+  const handleSpawn = async () => {
+    const text = await fetchText();
+    const newSpiral = (
+      <Spiral
+        key={spirals.length}
+        svgRef={svgRef}
+        center={center}
+        text={text}
+      />
+    );
+    setSpirals((prev) => [...prev, newSpiral]);
+  };
+
+  const handleTrigger = (msg: string) => console.log(msg);
 
   const randomizeCenter = () => {
     /* randomize the center position */
@@ -71,42 +98,6 @@ export default function Home() {
     };
   }, [language]);
 
-  // fetch text from API
-  useEffect(() => {
-    let mounted = true;
-    async function fetchText() {
-      setLoading(true);
-      for (let i = 0; i < config.numberOfSpirals; i++) {
-        let res = null;
-        let data: { text: any } | null = null;
-        try {
-          res = await fetch(
-            `/api/text?length=${length}&language=${encodeURIComponent(language)}`,
-          );
-          data = await res.json();
-          if (mounted && data) {
-            // @ts-ignore
-            setTextSet((prev) => [...prev, data.text ?? ""]);
-          }
-        } catch (e) {
-          if (mounted) {
-            const text =
-              "Ultimately, love is the thread that weaves meaning into the fabric of human existence. It is the force that inspires art, music, poetry, and countless acts of kindness. It gives depth to our joys and softens the pain of our sorrows. To love and to be loved is to touch something beyond ourselves, to experience a connection that affirms our shared humanity. It is both a refuge and a challenge, a constant invitation to grow, to forgive, and to embrace life in all its beauty and complexity. In every sense, love is the heartbeat of our existence, quietly persistent, endlessly patient, and infinitely transformative.";
-            setTextSet((prev) => [...prev, text]);
-          }
-        } finally {
-          if (mounted) {
-            setLoading(false);
-          }
-        }
-      }
-    }
-    fetchText();
-    return () => {
-      mounted = false;
-    };
-  }, [length, language, config.numberOfSpirals]);
-
   useEffect(() => {
     setHydrated(true);
   }, []);
@@ -132,12 +123,9 @@ export default function Home() {
           viewBox="0 0 1600 900"
           preserveAspectRatio="xMidYMid slice"
         >
-          <CenterContext value={center}>
-            {/* numberOfSpirals distinctive spirals */}
-            {textSet.map((text, key) => (
-              <Spiral svgRef={svgRef} text={text} key={key} />
-            ))}
-          </CenterContext>
+          <TriggerContext.Provider value={handleTrigger}>
+            {spirals}
+          </TriggerContext.Provider>
         </svg>
       </Suspense>
       <div className="absolute bottom-5 right-5 flex items-center gap-2 text-sm font-medium text-white">
@@ -145,21 +133,9 @@ export default function Home() {
           Spirals:
           <input
             type="number"
-            value={config.numberOfSpirals}
-            onChange={(e) => {
-              config.numberOfSpirals = Number(e.target.value);
-            }}
+            value={spirals.length}
             className="ml-2 w-24 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white"
-          />
-        </label>
-
-        <label className="text-gray-300">
-          Length:
-          <input
-            type="number"
-            value={length}
-            onChange={(e) => setLength(Number(e.target.value))}
-            className="ml-2 w-24 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white"
+            readOnly
           />
         </label>
 
@@ -193,9 +169,6 @@ export default function Home() {
           </select>
         </label>
 
-        <div className="bg-white/10 px-3 py-1.5 rounded-md backdrop-blur-sm">
-          {loading ? "Loading" : "Loaded"}
-        </div>
         <button
           onClick={() => handleReplay()}
           className="bg-white/10 border border-white/20 hover:bg-white/20 text-white px-3 py-1.5 rounded-md transition"
@@ -208,6 +181,13 @@ export default function Home() {
           className="bg-white/10 border border-white/20 hover:bg-white/20 text-white px-3 py-1.5 rounded-md transition"
         >
           Redraw
+        </button>
+
+        <button
+          onClick={() => handleSpawn()}
+          className="bg-white/10 border border-white/20 hover:bg-white/20 text-white px-3 py-1.5 rounded-md transition"
+        >
+          Spawn
         </button>
       </div>
     </div>

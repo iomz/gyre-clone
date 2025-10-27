@@ -1,13 +1,15 @@
 "use client";
 
 import { useContext, useEffect, useRef, useState, RefObject } from "react";
-import { Center, CenterContext, SpiralContext } from "@/app/lib/definitions";
+import { Center, SpiralContext, TriggerContext } from "@/app/lib/definitions";
 
 export default function Spiral({
   svgRef,
+  center,
   text,
 }: {
   svgRef: RefObject<any>;
+  center: Center;
   text: string;
 }) {
   const [startOffset, setStartOffset] = useState<number>(10);
@@ -17,8 +19,8 @@ export default function Spiral({
   const [index, setIndex] = useState(0);
   const pathRef = useRef<any>(null);
   const textPathRef = useRef<any>(null);
-  const center = useContext(CenterContext);
   const config = useContext(SpiralContext);
+  const notify = useContext(TriggerContext);
 
   const addChar = (
     textPathRef: RefObject<SVGTextPathElement>,
@@ -158,7 +160,12 @@ export default function Spiral({
       if (index > circumference) {
         break;
       }
-      const fontSize = (1 - index / circumference) * initialFontSize;
+      const fontSize =
+        (1 - index / (config.fontScaleConstant * circumference)) *
+        initialFontSize;
+      if (fontSize < config.cutoffFontSize) {
+        break;
+      }
       addChar(textPathRef, text[index], fontSize);
     }
     setIndex(0);
@@ -171,13 +178,12 @@ export default function Spiral({
   useEffect(() => {
     const tspans = textPathRef.current.children;
     //console.log(circumference, tspans.length, index);
-    if (
-      circumference == 0 ||
-      tspans.length < 2 ||
-      index > tspans.length ||
-      index > circumference ||
-      index < 0
-    ) {
+    if (circumference == 0 || tspans.length < 2 || index < 0) {
+      return;
+    } else if (index + 1 > tspans.length) {
+      notify(
+        `index: ${index}, tspans.length: ${tspans.length}, circumference: ${circumference}`,
+      );
       return;
     }
     const timer = setTimeout(() => {
@@ -185,8 +191,9 @@ export default function Spiral({
       tspans[index].style.opacity = `${opacity}`;
       setIndex(index + 1);
     }, config.typeSpeed);
+
     return () => clearTimeout(timer);
-  }, [index, circumference]);
+  }, [index, circumference, notify]);
 
   return (
     <>
