@@ -1,8 +1,8 @@
 "use client";
 
 import { Suspense } from "react";
-import { useEffect, useRef, useState } from "react";
-import { Center } from "@/app/lib/types";
+import { useContext, useEffect, useRef, useState } from "react";
+import { Center, CenterContext, SpiralContext } from "@/app/lib/definitions";
 import Spiral from "@/app/ui/spiral";
 
 type VoiceOption = SpeechSynthesisVoice | null;
@@ -17,26 +17,7 @@ export default function Home() {
   const [language, setLanguage] = useState<string>("en-US");
   const [center, setCenter] = useState<Center>({ x: 100, y: 100 });
   const svgRef = useRef<any>(null);
-  const config = {
-    cutoffR: 80,
-    cXMax: 75,
-    cXMin: 25,
-    cYMax: 55,
-    cYMin: 45,
-    fontMax: 1.0, // in em
-    fontMin: 0.3, // in em
-    jitter: 30,
-    numberOfSpirals: 6,
-    pointsPerTurn: 240,
-    rMax: 400,
-    rMin: 150,
-    startOffsetMax: 15,
-    startOffsetMin: 0,
-    turnMax: 12,
-    turnMin: 6,
-    typeSpeed: 50, // in ms
-  };
-
+  const config = useContext(SpiralContext);
   const handleRedraw = () => {
     randomizeCenter();
   };
@@ -151,16 +132,12 @@ export default function Home() {
           viewBox="0 0 1600 900"
           preserveAspectRatio="xMidYMid slice"
         >
-          {/* numberOfSpirals distinctive spirals */}
-          {textSet.map((text, key) => (
-            <Spiral
-              svgRef={svgRef}
-              config={config}
-              center={center}
-              text={text}
-              key={key}
-            />
-          ))}
+          <CenterContext value={center}>
+            {/* numberOfSpirals distinctive spirals */}
+            {textSet.map((text, key) => (
+              <Spiral svgRef={svgRef} text={text} key={key} />
+            ))}
+          </CenterContext>
         </svg>
       </Suspense>
       <div className="absolute bottom-5 right-5 flex items-center gap-2 text-sm font-medium text-white">

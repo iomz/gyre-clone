@@ -1,17 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState, RefObject } from "react";
-import { Center, Config } from "@/app/lib/types";
+import { useContext, useEffect, useRef, useState, RefObject } from "react";
+import { Center, CenterContext, SpiralContext } from "@/app/lib/definitions";
 
 export default function Spiral({
   svgRef,
-  config,
-  center,
   text,
 }: {
   svgRef: RefObject<any>;
-  config: Config;
-  center: Center;
   text: string;
 }) {
   const [startOffset, setStartOffset] = useState<number>(10);
@@ -21,6 +17,8 @@ export default function Spiral({
   const [index, setIndex] = useState(0);
   const pathRef = useRef<any>(null);
   const textPathRef = useRef<any>(null);
+  const center = useContext(CenterContext);
+  const config = useContext(SpiralContext);
 
   const addChar = (
     textPathRef: RefObject<SVGTextPathElement>,

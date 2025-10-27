@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, RefObject } from "react";
-import { Center, ConfigDev } from "@/app/lib/types";
+import { Center, ConfigDev } from "@/app/lib/definitions";
 
 export default function Spiral({
   config,

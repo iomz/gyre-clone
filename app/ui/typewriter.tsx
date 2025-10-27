@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Config } from "@/app/lib/types";
+import { Config } from "@/app/lib/definitions";
 import Word from "@/app/ui/word";
 
 export default function Typewriter({
