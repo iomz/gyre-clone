@@ -35,11 +35,12 @@ export const SpiralContext = createContext({
   speechInterval: 10000,
   speechPitch: 0.8,
   speechRate: 0.9,
+  spiralMax: 30,
   startOffsetMax: 15,
   startOffsetMin: 0,
   turnMax: 10,
   turnMin: 4,
-  typeSpeed: 1, // in ms
+  typeSpeed: 50, // in ms
 });
 
 export const TriggerContext = createContext<(msg: string) => void>(() => {});

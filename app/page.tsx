@@ -14,17 +14,21 @@ export default function Home() {
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [selectedVoice, setSelectedVoice] = useState<VoiceOption>(null);
   const [language, setLanguage] = useState<string>("en-US");
+  const [topic, setTopic] = useState<string>("love");
   const [center, setCenter] = useState<Center>({ x: 100, y: 100 });
   const svgRef = useRef<SVGSVGElement | null>(null);
   const config = useContext(SpiralContext);
 
-  async function fetchSpiralText(n: number = 5) {
-    const category = "love";
+  async function fetchSpiralText(
+    language: string,
+    topic: string,
+    n: number = 5,
+  ) {
     let res = null;
     let data: { concatenatedText: string } | null = null;
     try {
       res = await fetch(
-        `/api/message?language=${encodeURIComponent(language)}&category=${encodeURIComponent(category)}&n=${encodeURIComponent(n)}`,
+        `/api/message?language=${encodeURIComponent(language)}&category=${encodeURIComponent(topic)}&n=${encodeURIComponent(n)}`,
       );
       data = await res.json();
       if (data) {
@@ -68,7 +72,7 @@ export default function Home() {
     // Usage: 0.2 second of radio-like noise
     playRadioNoise(0.2);
 
-    const text = await fetchSpiralText(1);
+    const text = await fetchSpiralText(language, topic, 1);
     // TODO: implement text to speak algorithm here
     console.log("I should be speaking...");
     const utter = new SpeechSynthesisUtterance(text);
@@ -88,8 +92,14 @@ export default function Home() {
     window.speechSynthesis.cancel(); // stops immediately
   };
 
+  const handleSwitchTopic = (l: string, t: string) => {
+    setLanguage(l);
+    setTopic(t);
+    setSpirals([]);
+  };
+
   const handleSpawn = async () => {
-    const text = await fetchSpiralText(5);
+    const text = await fetchSpiralText(language, topic, 5);
     const newSpiral = (
       <Spiral
         key={spirals.length}
@@ -103,7 +113,9 @@ export default function Home() {
 
   const handleTrigger = (msg: string) => {
     console.log(msg);
-    handleSpawn();
+    if (spirals.length < config.spiralMax) {
+      handleSpawn();
+    }
   };
 
   const randomizeCenter = () => {
@@ -120,11 +132,16 @@ export default function Home() {
     function loadVoices() {
       const v = window.speechSynthesis.getVoices();
       setVoices(v);
-      if (!selectedVoice && v.length > 0) {
+      if (v.length > 0) {
         //const preferred = v.find((x) => x.lang === language) || v[0];
-        const preferred =
-          v.find((x) => x.name === "Google UK English Male") || v[0];
-        setSelectedVoice(preferred);
+        if (language.startsWith("en")) {
+          const preferred =
+            v.find((x) => x.name === "Google UK English Male") || v[0];
+          setSelectedVoice(preferred);
+        } else if (language.startsWith("ja")) {
+          const preferred = v.find((x) => x.name.startsWith("O-Ren")) || v[0];
+          setSelectedVoice(preferred);
+        }
       }
     }
     loadVoices();
@@ -180,11 +197,22 @@ export default function Home() {
           Language:
           <select
             value={language}
-            onChange={(e) => setLanguage(e.target.value)}
+            onChange={(e) => handleSwitchTopic(e.target.value, topic)}
             className="ml-2 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white"
           >
-            <option value="en-US">English (US)</option>
-            <option value="ja-JP">日本語 (JA)</option>
+            <option value="en-US">English (en-US)</option>
+            <option value="ja-JP">日本語 (ja-JP)</option>
+          </select>
+        </label>
+
+        <label className="text-gray-300">
+          Topic:
+          <select
+            value={topic}
+            onChange={(e) => handleSwitchTopic(language, e.target.value)}
+            className="ml-2 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white"
+          >
+            <option value="love">Love</option>
           </select>
         </label>
 
