@@ -3,6 +3,7 @@
 import { Suspense } from "react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Center, SpiralContext, TriggerContext } from "@/app/lib/definitions";
+import { fetchText } from "@/services/fetchText";
 import Spiral from "@/app/ui/spiral";
 
 type VoiceOption = SpeechSynthesisVoice | null;
@@ -17,14 +18,17 @@ export default function Home() {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const config = useContext(SpiralContext);
 
-  async function fetchText() {
+  async function fetchSpiralText(n: number = 5) {
+    const category = "love";
     let res = null;
-    let data: { text: string } | null = null;
+    let data: { concatenatedText: string } | null = null;
     try {
-      res = await fetch(`/api/text?language=${encodeURIComponent(language)}`);
+      res = await fetch(
+        `/api/message?language=${encodeURIComponent(language)}&category=${encodeURIComponent(category)}&n=${encodeURIComponent(n)}`,
+      );
       data = await res.json();
       if (data) {
-        return data.text ?? "";
+        return data.concatenatedText ?? "";
       }
     } catch {
       const text = "text fetch server is down";
@@ -33,24 +37,24 @@ export default function Home() {
   }
 
   const handleReplay = async () => {
-    const text = await fetchText();
+    const text = await fetchSpiralText(1);
     // TODO: implement text to speak algorithm here
     console.log("I should be speaking...");
     const utter = new SpeechSynthesisUtterance(text);
     utter.voice = selectedVoice ?? null;
     utter.lang = language;
-    utter.pitch = 0.8;
-    utter.rate = 0.8;
+    utter.pitch = config.speechPitch;
+    utter.rate = config.speechRate;
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(utter);
 
     utter.onend = () => {
-      setTimeout(() => handleReplay(), 5000); // wait 5 seconds after speech ends
+      setTimeout(() => handleReplay(), config.speechInterval); // wait 5 seconds after speech ends
     };
   };
 
   const handleSpawn = async () => {
-    const text = await fetchText()!;
+    const text = await fetchSpiralText(5);
     const newSpiral = (
       <Spiral
         key={spirals.length}
@@ -82,7 +86,9 @@ export default function Home() {
       const v = window.speechSynthesis.getVoices();
       setVoices(v);
       if (!selectedVoice && v.length > 0) {
-        const preferred = v.find((x) => x.lang === language) || v[0];
+        //const preferred = v.find((x) => x.lang === language) || v[0];
+        const preferred =
+          v.find((x) => x.name === "Google UK English Male") || v[0];
         setSelectedVoice(preferred);
       }
     }
@@ -102,7 +108,6 @@ export default function Home() {
   useEffect(() => {
     const t = setTimeout(() => {
       //console.log("fully hydrated!");
-      //handleReplay();
       handleSpawn();
     }, 1000);
 
@@ -144,7 +149,7 @@ export default function Home() {
             className="ml-2 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white"
           >
             <option value="en-US">English (US)</option>
-            <option value="pt-PT">Português (PT)</option>
+            <option value="ja-JP">日本語 (JA)</option>
           </select>
         </label>
 
@@ -170,7 +175,7 @@ export default function Home() {
           onClick={() => handleReplay()}
           className="bg-white/10 border border-white/20 hover:bg-white/20 text-white px-3 py-1.5 rounded-md transition"
         >
-          Replay
+          Play
         </button>
 
         <button
