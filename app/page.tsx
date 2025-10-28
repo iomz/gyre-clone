@@ -36,7 +36,7 @@ export default function Home() {
     }
   }
 
-  const handleReplay = async () => {
+  const handlePlay = async () => {
     const text = await fetchSpiralText(1);
     // TODO: implement text to speak algorithm here
     console.log("I should be speaking...");
@@ -49,8 +49,12 @@ export default function Home() {
     window.speechSynthesis.speak(utter);
 
     utter.onend = () => {
-      setTimeout(() => handleReplay(), config.speechInterval); // wait 5 seconds after speech ends
+      setTimeout(() => handlePlay(), config.speechInterval); // wait 5 seconds after speech ends
     };
+  };
+
+  const handleStop = () => {
+    window.speechSynthesis.cancel(); // stops immediately
   };
 
   const handleSpawn = async () => {
@@ -172,10 +176,17 @@ export default function Home() {
         </label>
 
         <button
-          onClick={() => handleReplay()}
+          onClick={() => handlePlay()}
           className="bg-white/10 border border-white/20 hover:bg-white/20 text-white px-3 py-1.5 rounded-md transition"
         >
           Play
+        </button>
+
+        <button
+          onClick={() => handleStop()}
+          className="bg-white/10 border border-white/20 hover:bg-white/20 text-white px-3 py-1.5 rounded-md transition"
+        >
+          Stop
         </button>
 
         <button
