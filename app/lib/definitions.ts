@@ -5,6 +5,12 @@ export interface Center {
   y: number;
 }
 
+export interface CharData {
+  w: string;
+  fontSize: number;
+  opacity: number;
+}
+
 export interface ConfigDev {
   pointsPerTurn: number;
   typeSpeed: number;
@@ -12,7 +18,7 @@ export interface ConfigDev {
 
 export const SpiralContext = createContext({
   cutoffFontSize: 0.2,
-  cutoffR: 50,
+  cutoffR: 40,
   cXMax: 70,
   cXMin: 30,
   cYMax: 55,
@@ -22,14 +28,15 @@ export const SpiralContext = createContext({
   fontScaleConstant: 1.25,
   jitter: 30,
   numberOfSpirals: 2,
+  opacityConstant: 0.8,
   pointsPerTurn: 240,
   rMax: 400,
   rMin: 200,
   startOffsetMax: 15,
   startOffsetMin: 0,
-  turnMax: 12,
-  turnMin: 6,
-  typeSpeed: 50, // in ms
+  turnMax: 10,
+  turnMin: 4,
+  typeSpeed: 1, // in ms
 });
 
 export const TriggerContext = createContext<(msg: string) => void>(() => {});

@@ -1,7 +1,7 @@
-export default function Word({
+export default function Char({
   w,
   fontSize,
-  opacity,
+  opacity = 0,
 }: {
   w: string;
   fontSize: number;
@@ -10,7 +10,7 @@ export default function Word({
   return (
     <tspan
       style={{
-        fontSize: `${fontSize}`,
+        fontSize: `${fontSize}em`,
         opacity: `${opacity}`,
       }}
     >

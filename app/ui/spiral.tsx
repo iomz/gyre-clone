@@ -1,42 +1,34 @@
 "use client";
 
 import { useContext, useEffect, useRef, useState, RefObject } from "react";
-import { Center, SpiralContext, TriggerContext } from "@/app/lib/definitions";
+import {
+  Center,
+  CharData,
+  SpiralContext,
+  TriggerContext,
+} from "@/app/lib/definitions";
+import Char from "@/app/ui/char";
 
 export default function Spiral({
   svgRef,
   center,
   text,
 }: {
-  svgRef: RefObject<any>;
+  svgRef: RefObject<SVGSVGElement | null>;
   center: Center;
-  text: string;
+  text: string | undefined;
 }) {
+  const [typewriter, setTypewriter] = useState<CharData[]>([]);
+  const [done, setDone] = useState<boolean>(false);
   const [startOffset, setStartOffset] = useState<number>(10);
   const [initialFontSize, setInitialFontSize] = useState<number>(1);
   const [pathId, setPathId] = useState<string>("");
   const [circumference, setCircumference] = useState<number>(0);
   const [index, setIndex] = useState(0);
-  const pathRef = useRef<any>(null);
-  const textPathRef = useRef<any>(null);
+  const pathRef = useRef<SVGPathElement>(null);
+  const textPathRef = useRef<SVGTextPathElement>(null);
   const config = useContext(SpiralContext);
   const notify = useContext(TriggerContext);
-
-  const addChar = (
-    textPathRef: RefObject<SVGTextPathElement>,
-    w: string,
-    fontSize: number,
-    opacity: number = 0,
-  ) => {
-    const tspan = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "tspan",
-    );
-    tspan.style.fontSize = `${fontSize}em`;
-    tspan.style.opacity = `${opacity}`;
-    tspan.textContent = w === " " ? "\u00A0" : w;
-    textPathRef.current?.appendChild(tspan);
-  };
 
   const buildClockwiseSpiral = (
     center: Center,
@@ -96,8 +88,8 @@ export default function Spiral({
       "viewBox",
       `0 0 ${Math.max(100, vw)} ${Math.max(100, vh)}`,
     );
-    const width = parseFloat(svg.viewBox.baseVal.width);
-    const height = parseFloat(svg.viewBox.baseVal.height);
+    const width = parseFloat(svg.viewBox.baseVal.width.toString());
+    const height = parseFloat(svg.viewBox.baseVal.height.toString());
     const spiralCenter = {
       x: center.x * (width / 100) + xJitter,
       y: center.y * (height / 100) + yJitter,
@@ -148,7 +140,7 @@ export default function Spiral({
    *
    * */
   useEffect(() => {
-    const tspans = textPathRef.current.children;
+    const tspans = textPathRef.current!.children;
     if (tspans.length > 0) {
       return;
     }
@@ -156,7 +148,7 @@ export default function Spiral({
       return;
     }
     // populate the spiral text
-    for (let index = 0; index < text.length; index++) {
+    for (let index = 0; index < text!.length; index++) {
       if (index > circumference) {
         break;
       }
@@ -166,7 +158,12 @@ export default function Spiral({
       if (fontSize < config.cutoffFontSize) {
         break;
       }
-      addChar(textPathRef, text[index], fontSize);
+      const newChar = {
+        w: text![index],
+        fontSize: fontSize,
+        opacity: 0,
+      };
+      setTypewriter((prev) => [...prev, newChar]);
     }
     setIndex(0);
   }, [text, initialFontSize, circumference]);
@@ -176,24 +173,28 @@ export default function Spiral({
    *
    * */
   useEffect(() => {
-    const tspans = textPathRef.current.children;
+    const tspans = textPathRef.current!.children;
     //console.log(circumference, tspans.length, index);
     if (circumference == 0 || tspans.length < 2 || index < 0) {
       return;
     } else if (index + 1 > tspans.length) {
-      notify(
-        `index: ${index}, tspans.length: ${tspans.length}, circumference: ${circumference}`,
-      );
+      if (!done) {
+        notify(
+          `index: ${index}, tspans.length: ${tspans.length}, circumference: ${circumference}`,
+        );
+        setDone(true); // notify only once
+      }
       return;
     }
     const timer = setTimeout(() => {
-      const opacity = 1 - index / tspans.length;
-      tspans[index].style.opacity = `${opacity}`;
+      const opacity = 1 - (config.opacityConstant * index) / tspans.length;
+      const char = tspans[index] as SVGTSpanElement;
+      char.style.opacity = `${opacity}`;
       setIndex(index + 1);
     }, config.typeSpeed);
 
     return () => clearTimeout(timer);
-  }, [index, circumference, notify]);
+  }, [index, circumference, typewriter, notify]);
 
   return (
     <>
@@ -215,7 +216,16 @@ export default function Spiral({
           startOffset={`${startOffset}%`}
           ref={textPathRef}
           style={{ opacity: 1 }}
-        ></textPath>
+        >
+          {typewriter.map((cd, index) => (
+            <Char
+              key={index}
+              w={cd.w}
+              fontSize={cd.fontSize}
+              opacity={cd.opacity}
+            />
+          ))}
+        </textPath>
       </text>
     </>
   );

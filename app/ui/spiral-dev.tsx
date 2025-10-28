@@ -15,7 +15,7 @@ export default function Spiral({
 }: {
   config: ConfigDev;
   text: string;
-  svgRef: RefObject<any>;
+  svgRef: RefObject<SVGSVGElement | null>;
   maxR: number;
   turns: number;
   startOffset: number;
@@ -26,8 +26,8 @@ export default function Spiral({
   const [circumference, setCircumference] = useState<number>(0);
   const [index, setIndex] = useState<number>(-1);
   const [length, setLength] = useState<number>(0);
-  const pathRef = useRef<any>(null);
-  const textPathRef = useRef<any>(null);
+  const pathRef = useRef<SVGPathElement>(null);
+  const textPathRef = useRef<SVGTextPathElement>(null);
 
   const addTspan = (w: string, fontSize: number, opacity: number = 0) => {
     const tspan = document.createElementNS(

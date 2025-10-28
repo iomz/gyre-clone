@@ -12,7 +12,7 @@ export default function Home() {
   const [initialFontSize, setInitialFontSize] = useState<number>(1.0);
   const [cutoffR, setCutoffR] = useState<number>(80);
 
-  const svgRef = useRef<any>(null);
+  const svgRef = useRef<SVGSVGElement | null>(null);
   const config = {
     pointsPerTurn: 240,
     typeSpeed: 50, // in ms
@@ -22,18 +22,11 @@ export default function Home() {
   useEffect(() => {
     async function fetchText() {
       let res = null;
-      let data: { text: any } | null = null;
-      try {
-        res = await fetch(`/api/text`);
-        data = await res.json();
-        if (data) {
-          // @ts-ignore
-          setText(data.text ?? "");
-        }
-      } catch (e) {
-        const text =
-          "Ultimately, love is the thread that weaves meaning into the fabric of human existence. It is the force that inspires art, music, poetry, and countless acts of kindness. It gives depth to our joys and softens the pain of our sorrows. To love and to be loved is to touch something beyond ourselves, to experience a connection that affirms our shared humanity. It is both a refuge and a challenge, a constant invitation to grow, to forgive, and to embrace life in all its beauty and complexity. In every sense, love is the heartbeat of our existence, quietly persistent, endlessly patient, and infinitely transformative.";
-        setText(text);
+      let data: { text: string } | null = null;
+      res = await fetch(`/api/text`);
+      data = await res.json();
+      if (data) {
+        setText(data.text ?? "");
       }
     }
     fetchText();

@@ -14,27 +14,23 @@ export default function Home() {
   const [selectedVoice, setSelectedVoice] = useState<VoiceOption>(null);
   const [language, setLanguage] = useState<string>("en-US");
   const [center, setCenter] = useState<Center>({ x: 100, y: 100 });
-  const svgRef = useRef<any>(null);
+  const svgRef = useRef<SVGSVGElement | null>(null);
   const config = useContext(SpiralContext);
 
   async function fetchText() {
     let res = null;
-    let data: { text: any } | null = null;
+    let data: { text: string } | null = null;
     try {
       res = await fetch(`/api/text?language=${encodeURIComponent(language)}`);
       data = await res.json();
       if (data) {
         return data.text ?? "";
       }
-    } catch (e) {
+    } catch {
       const text = "text fetch server is down";
       return text;
     }
   }
-
-  const handleRedraw = () => {
-    randomizeCenter();
-  };
 
   const handleReplay = async () => {
     const text = await fetchText();
@@ -54,7 +50,7 @@ export default function Home() {
   };
 
   const handleSpawn = async () => {
-    const text = await fetchText();
+    const text = await fetchText()!;
     const newSpiral = (
       <Spiral
         key={spirals.length}
@@ -66,7 +62,10 @@ export default function Home() {
     setSpirals((prev) => [...prev, newSpiral]);
   };
 
-  const handleTrigger = (msg: string) => console.log(msg);
+  const handleTrigger = (msg: string) => {
+    console.log(msg);
+    handleSpawn();
+  };
 
   const randomizeCenter = () => {
     /* randomize the center position */
@@ -76,10 +75,6 @@ export default function Home() {
       Math.floor(Math.random() * (config.cYMax - config.cYMin)) + config.cYMin;
     setCenter({ x: cx, y: cy });
   };
-
-  useEffect(() => {
-    randomizeCenter();
-  }, []);
 
   // load voices
   useEffect(() => {
@@ -99,6 +94,7 @@ export default function Home() {
   }, [language]);
 
   useEffect(() => {
+    randomizeCenter();
     setHydrated(true);
   }, []);
 
@@ -107,7 +103,8 @@ export default function Home() {
     const t = setTimeout(() => {
       //console.log("fully hydrated!");
       //handleReplay();
-    }, 5000);
+      handleSpawn();
+    }, 1000);
 
     // cleanup
     return () => clearTimeout(t);
@@ -174,13 +171,6 @@ export default function Home() {
           className="bg-white/10 border border-white/20 hover:bg-white/20 text-white px-3 py-1.5 rounded-md transition"
         >
           Replay
-        </button>
-
-        <button
-          onClick={() => handleRedraw()}
-          className="bg-white/10 border border-white/20 hover:bg-white/20 text-white px-3 py-1.5 rounded-md transition"
-        >
-          Redraw
         </button>
 
         <button
