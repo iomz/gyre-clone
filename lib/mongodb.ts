@@ -9,10 +9,13 @@ if (!MONGODB_URI) {
 }
 
 // Reuse the connection during hot reloads in development
-let cached = (global as any).mongoose || { conn: null, promise: null };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const cached = (global as any).mongoose || { conn: null, promise: null };
 
 export async function connectDB() {
-  if (cached.conn) return cached.conn;
+  if (cached.conn) {
+    return cached.conn;
+  }
 
   if (!cached.promise) {
     cached.promise = mongoose

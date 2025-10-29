@@ -3,7 +3,6 @@
 import { Suspense } from "react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Center, SpiralContext, TriggerContext } from "@/app/lib/definitions";
-import { fetchText } from "@/services/fetchText";
 import Spiral from "@/app/ui/spiral";
 
 type VoiceOption = SpeechSynthesisVoice | null;

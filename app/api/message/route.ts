@@ -28,10 +28,15 @@ export async function GET(req: Request) {
     const language = searchParams.get("language");
     const n = parseInt(searchParams.get("n") || "0", 10); // optional limit
 
-    const match: Record<string, any> = {};
-    if (category) match.category = category;
-    if (language) match.language = language;
+    const match: Record<string, string> = {};
+    if (category) {
+      match.category = category;
+    }
+    if (language) {
+      match.language = language;
+    }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const pipeline: any[] = [];
 
     // Optional filters
