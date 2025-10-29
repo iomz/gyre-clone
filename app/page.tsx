@@ -73,8 +73,7 @@ export default function Home() {
     playRadioNoise(0.2);
 
     const text = await fetchSpiralText(language, topic, 1);
-    // TODO: implement text to speak algorithm here
-    console.log("I should be speaking...");
+    //console.log("I should be speaking...");
     const utter = new SpeechSynthesisUtterance(text);
     utter.voice = selectedVoice ?? null;
     utter.lang = language;
@@ -141,6 +140,9 @@ export default function Home() {
         } else if (language.startsWith("ja")) {
           const preferred = v.find((x) => x.name.startsWith("O-Ren")) || v[0];
           setSelectedVoice(preferred);
+        } else if (language.startsWith("pt")) {
+          const preferred = v.find((x) => x.name.startsWith("Joana")) || v[0];
+          setSelectedVoice(preferred);
         }
       }
     }
@@ -148,6 +150,7 @@ export default function Home() {
     window.speechSynthesis.onvoiceschanged = loadVoices;
     return () => {
       window.speechSynthesis.onvoiceschanged = null;
+      handleStop();
     };
   }, [language]);
 
@@ -202,6 +205,7 @@ export default function Home() {
           >
             <option value="en-US">English (en-US)</option>
             <option value="ja-JP">日本語 (ja-JP)</option>
+            <option value="pt-PT">Português (pt-PT)</option>
           </select>
         </label>
 
@@ -213,6 +217,9 @@ export default function Home() {
             className="ml-2 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white"
           >
             <option value="love">Love</option>
+            <option value="philosophy">Philosophy</option>
+            <option value="politics">Politics</option>
+            <option value="science">Science</option>
           </select>
         </label>
 
