@@ -159,7 +159,7 @@ export default function Spiral({
         break;
       }
       const newChar = {
-        w: text![index],
+        w: text!.charAt(index),
         fontSize: fontSize,
         opacity: 0,
       };
