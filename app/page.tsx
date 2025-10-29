@@ -13,6 +13,7 @@ export default function Home() {
   const [hydrated, setHydrated] = useState(false);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [selectedVoice, setSelectedVoice] = useState<VoiceOption>(null);
+  const [speaking, setSpeaking] = useState<boolean>(false);
   const [language, setLanguage] = useState<string>("en-US");
   const [topic, setTopic] = useState<string>("love");
   const [center, setCenter] = useState<Center>({ x: 100, y: 100 });
@@ -67,6 +68,16 @@ export default function Home() {
     noise.start();
     noise.stop(audioCtx.currentTime + duration);
   }
+
+  const handleSpeech = async () => {
+    if (speaking) {
+      setSpeaking(false);
+      handleStop();
+    } else {
+      setSpeaking(true);
+      await handlePlay();
+    }
+  };
 
   const handlePlay = async () => {
     // Usage: 0.2 second of radio-like noise
@@ -242,17 +253,10 @@ export default function Home() {
         </label>
 
         <button
-          onClick={() => handlePlay()}
+          onClick={() => handleSpeech()}
           className="bg-white/10 border border-white/20 hover:bg-white/20 text-white px-3 py-1.5 rounded-md transition"
         >
-          Play
-        </button>
-
-        <button
-          onClick={() => handleStop()}
-          className="bg-white/10 border border-white/20 hover:bg-white/20 text-white px-3 py-1.5 rounded-md transition"
-        >
-          Stop
+          {speaking ? "Stop" : "Speak"}
         </button>
 
         <button
