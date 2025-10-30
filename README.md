@@ -2,7 +2,7 @@
 
 # GYRE Clone
 
-More than a decade ago, [a shopping complex located at Omotesando](https://gyre-omotesando.com/), Tokyo had an inspiring website displaying swirling words flowing into vortex.
+More than a decade ago, [a shopping complex located at Omotesando, Tokyo](https://gyre-omotesando.com/) had an inspiring website displaying swirling words flowing into vortex.
 I was just so keen to recreate the same or at least similar concept design to gain that nearly meditating feeling of watching the gyre.
 
 The original work was produced by THA LTD, as "[GYRE WORLD REFLECTOR](https://tha.jp/45)."
