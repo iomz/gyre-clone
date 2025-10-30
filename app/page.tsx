@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { FaGithub } from "react-icons/fa";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Geist_Mono, Noto_Serif_JP } from "next/font/google";
+import { Roboto, Noto_Serif_JP } from "next/font/google";
 import { Center, SpiralContext, TriggerContext } from "@/app/lib/definitions";
 import Spiral from "@/app/ui/spiral";
 import Logo from "@/app/ui/logo";
@@ -12,8 +12,8 @@ import Logo from "@/app/ui/logo";
 type VoiceOption = SpeechSynthesisVoice | null;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const roboto = Roboto({
+  variable: "--font-roboto",
   subsets: ["latin"],
 });
 
@@ -245,7 +245,7 @@ export default function App() {
           <style>
             {`
               text {
-                font-family: ${language === "ja-JP" ? "noto-serif-jp" : "geist-mono"} monospace;
+                font-family: ${language === "ja-JP" ? "noto-serif-jp monospace" : "roboto"};
               }
             `}
           </style>
