@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Center, SpiralContext, TriggerContext } from "@/app/lib/definitions";
 import Spiral from "@/app/ui/spiral";
+import Logo from "@/app/ui/logo";
 
 type VoiceOption = SpeechSynthesisVoice | null;
 
@@ -182,9 +183,11 @@ export default function Home() {
 
   return (
     <div className="relative w-screen h-screen bg-black overflow-hidden">
+      <Logo center={center} />
       {/* Fullscreen SVG */}
       <Suspense>
         <svg
+          xmlns="http://www.w3.org/2000/svg"
           ref={svgRef}
           className="w-full h-full"
           viewBox="0 0 1600 900"
