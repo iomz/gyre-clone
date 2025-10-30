@@ -26,11 +26,12 @@ export const SpiralContext = createContext({
   fontMax: 1.0, // in em
   fontMin: 0.5, // in em
   fontScaleConstant: 1.25,
+  japaneseSizeAdjust: 0.8,
   jitter: 30,
   numberOfSpirals: 2,
   opacityConstant: 0.9,
   pointsPerTurn: 240,
-  rMaxRatio: 8 / 5 / 2, // of window height
+  rMaxRatio: 9 / 5 / 2, // of window height
   rMinRatio: 7 / 10 / 2, // of window height
   speechInterval: 10000,
   speechPitch: 0.8,
@@ -39,7 +40,7 @@ export const SpiralContext = createContext({
   startOffsetMax: 15,
   turnMax: 10,
   turnMin: 4,
-  typeSpeed: 50, // in ms
+  typeSpeed: 1, // in ms
 });
 
 export const TriggerContext = createContext<(msg: string) => void>(() => {});

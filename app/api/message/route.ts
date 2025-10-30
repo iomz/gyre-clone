@@ -24,8 +24,8 @@ export async function GET(req: Request) {
     await connectDB();
 
     const { searchParams } = new URL(req.url);
-    const category = searchParams.get("category");
-    const language = searchParams.get("language");
+    const category = searchParams.get("q");
+    const language = searchParams.get("hl");
     const n = parseInt(searchParams.get("n") || "0", 10); // optional limit
 
     const match: Record<string, string> = {};

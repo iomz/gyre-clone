@@ -2,20 +2,39 @@
 
 import { Suspense } from "react";
 import { useContext, useEffect, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Geist_Mono, Noto_Serif_JP } from "next/font/google";
 import { Center, SpiralContext, TriggerContext } from "@/app/lib/definitions";
 import Spiral from "@/app/ui/spiral";
 import Logo from "@/app/ui/logo";
 
 type VoiceOption = SpeechSynthesisVoice | null;
 
-export default function Home() {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const notoSerifJP = Noto_Serif_JP({
+  variable: "--font-noto-serif-jp",
+  subsets: ["latin"],
+});
+
+export default function App() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const [language, setLanguage] = useState<string>(
+    searchParams.get("hl") || "en-US",
+  );
+  const [topic, setTopic] = useState<string>(searchParams.get("q") || "love");
   const [spirals, setSpirals] = useState<React.JSX.Element[]>([]);
   const [hydrated, setHydrated] = useState(false);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [selectedVoice, setSelectedVoice] = useState<VoiceOption>(null);
   const [speaking, setSpeaking] = useState<boolean>(false);
-  const [language, setLanguage] = useState<string>("en-US");
-  const [topic, setTopic] = useState<string>("love");
   const [center, setCenter] = useState<Center>({ x: 0, y: 0 });
   const svgRef = useRef<SVGSVGElement | null>(null);
   const config = useContext(SpiralContext);
@@ -29,7 +48,7 @@ export default function Home() {
     let data: { concatenatedText: string } | null = null;
     try {
       res = await fetch(
-        `/api/message?language=${encodeURIComponent(language)}&category=${encodeURIComponent(topic)}&n=${encodeURIComponent(n)}`,
+        `/api/message?hl=${encodeURIComponent(language)}&q=${encodeURIComponent(topic)}&n=${encodeURIComponent(n)}`,
       );
       data = await res.json();
       if (data) {
@@ -107,7 +126,34 @@ export default function Home() {
     setLanguage(l);
     setTopic(t);
     setSpirals([]);
+    const params = new URLSearchParams(searchParams);
+    if (l) {
+      params.set("hl", l);
+    } else {
+      params.delete("hl");
+    }
+    if (t) {
+      params.set("q", t);
+    } else {
+      params.delete("q");
+    }
+    router.replace(`?${params.toString()}`);
   };
+
+  // 🪄 Sync URL → state (when user navigates with browser back/forward)
+  useEffect(() => {
+    const urlValue = searchParams.get("hl") || "en-US";
+    if (urlValue !== language) {
+      setLanguage(urlValue);
+    }
+  }, [searchParams, language]);
+
+  useEffect(() => {
+    const urlValue = searchParams.get("q") || "love";
+    if (urlValue !== topic) {
+      setTopic(urlValue);
+    }
+  }, [searchParams, topic]);
 
   const handleSpawn = async () => {
     const text = await fetchSpiralText(language, topic, 5);
@@ -117,6 +163,7 @@ export default function Home() {
         svgRef={svgRef}
         center={center}
         text={text}
+        language={language}
       />
     );
     setSpirals((prev) => [...prev, newSpiral]);
@@ -194,6 +241,13 @@ export default function Home() {
           viewBox="0 0 1600 900"
           preserveAspectRatio="xMidYMid slice"
         >
+          <style>
+            {`
+              text {
+                font-family: ${language === "ja-JP" ? "noto-serif-jp" : "geist-mono"} monospace;
+              }
+            `}
+          </style>
           <TriggerContext.Provider value={handleTrigger}>
             {spirals}
           </TriggerContext.Provider>

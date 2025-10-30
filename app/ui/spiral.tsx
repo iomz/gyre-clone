@@ -13,10 +13,12 @@ export default function Spiral({
   svgRef,
   center,
   text,
+  language,
 }: {
   svgRef: RefObject<SVGSVGElement | null>;
   center: Center;
   text: string | undefined;
+  language: string;
 }) {
   const [typewriter, setTypewriter] = useState<CharData[]>([]);
   const [done, setDone] = useState<boolean>(false);
@@ -159,7 +161,8 @@ export default function Spiral({
       }
       const fontSize =
         (1 - index / (config.fontScaleConstant * circumference)) *
-        initialFontSize;
+        initialFontSize *
+        (language === "ja-JP" ? config.japaneseSizeAdjust : 1.0);
       if (fontSize < config.cutoffFontSize) {
         break;
       }

@@ -41,8 +41,8 @@ export default function Logo({
       height={95}
       style={{
         position: "absolute",
-        right: `${100 - center?.x - 5}%`,
-        bottom: `${100 - center?.y}%`,
+        right: `${100 - center?.x - 2}%`,
+        bottom: `${100 - center?.y - 2}%`,
       }}
     />
   );
