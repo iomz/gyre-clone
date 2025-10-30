@@ -18,7 +18,7 @@ export interface ConfigDev {
 
 export const SpiralContext = createContext({
   cutoffFontSize: 0.2,
-  cutoffR: 60,
+  cutoffRRatio: 1 / 5 / 2, // of window height
   cXMax: 70,
   cXMin: 30,
   cYMax: 55,
@@ -30,14 +30,13 @@ export const SpiralContext = createContext({
   numberOfSpirals: 2,
   opacityConstant: 0.9,
   pointsPerTurn: 240,
-  rMax: 600,
-  rMin: 200,
+  rMaxRatio: 8 / 5 / 2, // of window height
+  rMinRatio: 7 / 10 / 2, // of window height
   speechInterval: 10000,
   speechPitch: 0.8,
   speechRate: 0.9,
   spiralMax: 30,
   startOffsetMax: 15,
-  startOffsetMin: 0,
   turnMax: 10,
   turnMin: 4,
   typeSpeed: 50, // in ms

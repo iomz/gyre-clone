@@ -77,19 +77,19 @@ export default function Spiral({
     const path = pathRef.current;
     if (!svg || !path) return;
 
-    // TODO: remove the spiral
-
-    // randomize the center
-    const xJitter = Math.floor(Math.random() * config.jitter) - config.jitter;
-    const yJitter = Math.floor(Math.random() * config.jitter) - config.jitter;
+    // fix the svg viewBox
     const vw = window.innerWidth / 2;
     const vh = window.innerHeight / 2;
     svg.setAttribute(
       "viewBox",
       `0 0 ${Math.max(100, vw)} ${Math.max(100, vh)}`,
     );
+
+    // drift the center
     const width = parseFloat(svg.viewBox.baseVal.width.toString());
     const height = parseFloat(svg.viewBox.baseVal.height.toString());
+    const xJitter = Math.floor(Math.random() * config.jitter) - config.jitter;
+    const yJitter = Math.floor(Math.random() * config.jitter) - config.jitter;
     const spiralCenter = {
       x: center.x * (width / 100) + xJitter,
       y: center.y * (height / 100) + yJitter,
@@ -101,27 +101,28 @@ export default function Spiral({
       config.turnMin;
 
     // randomize the maximum r of the spiral
-    const maxR =
-      Math.floor(Math.random() * (config.rMax - config.rMin)) + config.rMin;
+    const rMax = height * config.rMaxRatio;
+    const rMin = height * config.rMinRatio;
+    //console.log(`rMax: ${rMax} rMin: ${rMin}`);
+    const maxR = Math.floor(Math.random() * (rMax - rMin) + rMin);
 
     // randomize the start percentage of the spiral path
-    setStartOffset(
-      Math.floor(
-        Math.random() * (config.startOffsetMax - config.startOffsetMin),
-      ) + config.startOffsetMin,
-    );
+    setStartOffset(Math.floor(Math.random() * config.startOffsetMax));
 
     // randomize the initial font size
     setInitialFontSize(
       Math.random() * (config.fontMax - config.fontMin) + config.fontMin,
     );
 
+    // fix the cutoffR based on the window height
+    const cutoffR = Math.max(48, height * config.cutoffRRatio); // 48 = logo height / 2
+
     // generate the d for the spiral
     const d = buildClockwiseSpiral(
       spiralCenter,
       turns,
       maxR,
-      config.cutoffR,
+      cutoffR,
       startOffset,
     );
     path.setAttribute("d", d);
@@ -133,7 +134,11 @@ export default function Spiral({
 
     // set a unique id for the path
     setPathId(Math.random().toString(36).replace("0.", ""));
-  }, [text, center]);
+
+    return () => {
+      path.removeAttribute("d");
+    };
+  }, [center]);
 
   /* populate the tspans along the spiral path
    * circumference -> the perimeter of the spiral calculated during the build
@@ -180,7 +185,7 @@ export default function Spiral({
     } else if (index + 1 > tspans.length) {
       if (!done) {
         notify(
-          `index: ${index}, tspans.length: ${tspans.length}, circumference: ${circumference}`,
+          `[${pathId}] tspans.length: ${tspans.length} circumference: ${circumference}`,
         );
         setDone(true); // notify only once
       }

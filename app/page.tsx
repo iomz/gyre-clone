@@ -16,7 +16,7 @@ export default function Home() {
   const [speaking, setSpeaking] = useState<boolean>(false);
   const [language, setLanguage] = useState<string>("en-US");
   const [topic, setTopic] = useState<string>("love");
-  const [center, setCenter] = useState<Center>({ x: 100, y: 100 });
+  const [center, setCenter] = useState<Center>({ x: 0, y: 0 });
   const svgRef = useRef<SVGSVGElement | null>(null);
   const config = useContext(SpiralContext);
 
@@ -103,6 +103,7 @@ export default function Home() {
   };
 
   const handleSwitchTopic = (l: string, t: string) => {
+    handleStop();
     setLanguage(l);
     setTopic(t);
     setSpirals([]);
@@ -183,7 +184,7 @@ export default function Home() {
 
   return (
     <div className="relative w-screen h-screen bg-black overflow-hidden">
-      <Logo center={center} />
+      <Logo center={center} language={language} />
       {/* Fullscreen SVG */}
       <Suspense>
         <svg
@@ -258,7 +259,7 @@ export default function Home() {
           onClick={() => handleSpeech()}
           className="bg-white/10 border border-white/20 hover:bg-white/20 text-white px-3 py-1.5 rounded-md transition"
         >
-          {speaking ? "Stop" : "Speak"}
+          {speaking ? "Mute" : "Speak"}
         </button>
 
         <button
