@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
+import { FaGithub } from "react-icons/fa";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Geist_Mono, Noto_Serif_JP } from "next/font/google";
@@ -253,6 +254,19 @@ export default function App() {
           </TriggerContext.Provider>
         </svg>
       </Suspense>
+
+      <div className="absolute top-5 right-5 flex items-center gap-2 text-sm font-medium text-white">
+        <a
+          href="https://github.com/iomz/gyre-clone"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 text-gray-300 hover:text-sky-300"
+        >
+          <FaGithub size={24} />
+          <span>GitHub</span>
+        </a>
+      </div>
+
       <div className="absolute bottom-5 right-5 flex items-center gap-2 text-sm font-medium text-white">
         <label className="text-gray-300">
           Spirals:
