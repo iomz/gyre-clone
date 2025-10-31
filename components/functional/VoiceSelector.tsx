@@ -42,19 +42,22 @@ export default function VoiceSelector({
   }, [language]);
 
   return (
-    <select
-      value={selectedVoice?.name ?? ""}
-      onChange={(e) => {
-        const v = voices.find((x) => x.name === e.target.value);
-        setSelectedVoiceAction(v || null);
-      }}
-      className="ml-2 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white"
-    >
-      {voices.map((v) => (
-        <option key={v.name} value={v.name}>
-          {v.name} — {v.lang}
-        </option>
-      ))}
-    </select>
+    <label className="text-gray-300">
+      Voice:
+      <select
+        value={selectedVoice?.name ?? ""}
+        onChange={(e) => {
+          const v = voices.find((x) => x.name === e.target.value);
+          setSelectedVoiceAction(v || null);
+        }}
+        className="ml-2 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white"
+      >
+        {voices.map((v) => (
+          <option key={v.name} value={v.name}>
+            {v.name} — {v.lang}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }

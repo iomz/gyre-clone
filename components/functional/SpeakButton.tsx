@@ -25,7 +25,6 @@ export default function SpeakButton({
 
     startTransition(async () => {
       const text = await fetchRandomMessagesAction(language, topic, 1);
-      console.log(text);
       //console.log("I should be speaking...");
       const utter = new SpeechSynthesisUtterance(text);
       utter.voice = selectedVoice ?? null;

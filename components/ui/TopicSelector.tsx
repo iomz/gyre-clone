@@ -1,22 +1,42 @@
+"use client";
+
+import { useEffect, useState, useTransition } from "react";
+import { fetchTopicsAction } from "@/app/actions";
+
+type HandleTopicSelect = (topic: string) => void;
+
 export default function TopicSelector({
-  language,
   topic,
-  onChange,
+  onChangeAction,
 }: {
-  language: string;
   topic: string;
-  onChange: (language: string, topic: string) => void;
+  onChangeAction: HandleTopicSelect;
 }) {
+  const [topics, setTopics] = useState<string[]>([]);
+  const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    startTransition(async () => {
+      const newTopics = await fetchTopicsAction();
+      setTopics(newTopics);
+    });
+  }, []);
+
   return (
-    <select
-      value={topic}
-      onChange={(e) => onChange(language, e.target.value)}
-      className="ml-2 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white"
-    >
-      <option value="love">Love</option>
-      <option value="philosophy">Philosophy</option>
-      <option value="politics">Politics</option>
-      <option value="science">Science</option>
-    </select>
+    <label className="text-gray-300">
+      Topic:
+      <select
+        disabled={isPending}
+        value={topic}
+        onChange={(e) => onChangeAction(e.target.value)}
+        className="ml-2 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white"
+      >
+        {topics.map((t, i) => (
+          <option key={i} value={t}>
+            {t.charAt(0).toUpperCase() + t.slice(1)}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }

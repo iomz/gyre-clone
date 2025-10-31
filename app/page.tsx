@@ -12,6 +12,7 @@ import LanguageSelector from "@/components/ui/LanguageSelector";
 import TopicSelector from "@/components/ui/TopicSelector";
 import Header from "@/components/layout/Header";
 import SpeakButton from "@/components/functional/SpeakButton";
+import SpawnButton from "@/components/ui/SpawnButton";
 import VoiceSelector from "@/components/functional/VoiceSelector";
 import { useSyncedParam } from "@/hooks/useSyncedParam";
 import { randomIntRange } from "@/utils/random";
@@ -40,8 +41,12 @@ export default function App() {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const config = useContext(SpiralContext);
 
-  const handleSwitch = (l: string, t: string) => {
+  const handleLanguageSelect = (l: string) => {
     setLanguage(l);
+    setSpirals([]);
+  };
+
+  const handleTopicSelect = (t: string) => {
     setTopic(t);
     setSpirals([]);
   };
@@ -79,16 +84,14 @@ export default function App() {
     setHydrated(true);
   }, []);
 
-  // runs after hydration
   useEffect(() => {
-    const t = setTimeout(() => {
-      //console.log("fully hydrated!");
-      handleSpawn();
-    }, 1000);
-
-    // cleanup
-    return () => clearTimeout(t);
-  }, [hydrated]);
+    if (hydrated && spirals.length == 0) {
+      const t = setTimeout(() => {
+        handleSpawn();
+      }, 1000);
+      return () => clearTimeout(t);
+    }
+  }, [hydrated, spirals]);
 
   return (
     <div className="relative w-screen h-screen bg-black overflow-hidden">
@@ -103,32 +106,19 @@ export default function App() {
       <div className="absolute bottom-5 right-5 flex items-center gap-2 text-sm font-medium text-white">
         <SpiralCounter numberOfSpirals={spirals.length} />
 
-        <label className="text-gray-300">
-          Language:
-          <LanguageSelector
-            language={language}
-            topic={topic}
-            onChange={handleSwitch}
-          />
-        </label>
+        <TopicSelector topic={topic} onChangeAction={handleTopicSelect} />
 
-        <label className="text-gray-300">
-          Topic:
-          <TopicSelector
-            language={language}
-            topic={topic}
-            onChange={handleSwitch}
-          />
-        </label>
+        <LanguageSelector
+          language={language}
+          topic={topic}
+          onChangeAction={handleLanguageSelect}
+        />
 
-        <label className="text-gray-300">
-          Voice:
-          <VoiceSelector
-            language={language}
-            selectedVoice={selectedVoice}
-            setSelectedVoiceAction={setSelectedVoice}
-          />
-        </label>
+        <VoiceSelector
+          language={language}
+          selectedVoice={selectedVoice}
+          setSelectedVoiceAction={setSelectedVoice}
+        />
 
         <SpiralContext.Provider value={config}>
           <SpeakButton
@@ -138,13 +128,7 @@ export default function App() {
           />
         </SpiralContext.Provider>
 
-        <button
-          disabled={isPending}
-          onClick={() => handleSpawn()}
-          className="bg-white/10 border border-white/20 hover:bg-white/20 text-white px-3 py-1.5 rounded-md transition"
-        >
-          Spawn
-        </button>
+        <SpawnButton isPending={isPending} handleSpawn={handleSpawn} />
       </div>
     </div>
   );

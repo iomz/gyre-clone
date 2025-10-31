@@ -2,6 +2,20 @@
 import { connectDB } from "@/lib/db";
 import { Message } from "@/types/message";
 
+export async function fetchLanguagesAction(topic: string) {
+  await connectDB();
+
+  const uniqueLanguages = await Message.distinct("language", { topic: topic });
+  return uniqueLanguages;
+}
+
+export async function fetchTopicsAction() {
+  await connectDB();
+
+  const uniqueTopics = await Message.distinct("topic");
+  return uniqueTopics;
+}
+
 export async function fetchRandomMessagesAction(
   language: string,
   topic: string,
