@@ -23,6 +23,12 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 COPY .npmrc .
 
+# Declare build-time argument (optional)
+ARG MONGODB_URI
+
+# Set default only if not provided
+ENV MONGODB_URI=${MONGODB_URI:-mongodb://root:gyre-world-reflector@mongo:27017}
+
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
