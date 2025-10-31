@@ -2,6 +2,8 @@
 
 # GYRE Clone
 
+[![build status](https://github.com/iomz/gyre-clone/workflows/docker/badge.svg)](https://github.com/iomz/gyre-clone/actions?query=workflow%3Adocker)
+
 More than a decade ago, [a shopping complex located at Omotesando, Tokyo](https://gyre-omotesando.com/) had an inspiring website displaying swirling words flowing into vortex.
 I was just so keen to recreate the same or at least similar concept design to gain that nearly meditating feeling of watching the gyre.
 

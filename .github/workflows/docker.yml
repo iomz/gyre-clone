@@ -9,7 +9,7 @@ on:
     tags:
       - v*
 env:
-  IMAGE_NAME: dl-myo
+  IMAGE_NAME: gyre-clone
 jobs:
   package:
     runs-on: ubuntu-latest
