@@ -5,6 +5,7 @@ import { VoiceOption } from "@/types/definitions";
 import { SpiralContext } from "@/lib/context";
 import { playRadioNoise } from "@/utils/audio";
 import { fetchRandomMessagesAction } from "@/app/actions";
+import ConfirmModal from "@/components/ui/ConfirmModal";
 
 export default function SpeakButton({
   language,
@@ -15,6 +16,7 @@ export default function SpeakButton({
   topic: string;
   selectedVoice: VoiceOption;
 }) {
+  const [isModalOpen, setIsModalOpen] = useState(true);
   const [speaking, setSpeaking] = useState(false);
   const [isPending, startTransition] = useTransition();
   const config = useContext(SpiralContext);
@@ -40,6 +42,7 @@ export default function SpeakButton({
   };
 
   const handleSpeak = () => {
+    setIsModalOpen(false);
     if (speaking) {
       window.speechSynthesis.cancel();
       setSpeaking(false);
@@ -50,14 +53,24 @@ export default function SpeakButton({
   };
 
   return (
-    <button
-      disabled={isPending}
-      onClick={handleSpeak}
-      className={`bg-white/10 border border-white/20 hover:bg-white/20 text-white px-3 py-1.5 rounded-md transition ${
-        speaking ? "bg-red-400" : "bg-blue-400"
-      } text-white`}
-    >
-      {speaking ? "Mute" : "Speak"}
-    </button>
+    <>
+      <button
+        disabled={isPending}
+        onClick={handleSpeak}
+        className={`bg-white/10 border border-white/20 hover:bg-white/20 text-white px-3 py-1.5 rounded-md transition ${
+          speaking ? "bg-red-400" : "bg-blue-400"
+        } text-white`}
+      >
+        {speaking ? "Mute" : "Speak"}
+      </button>
+
+      <ConfirmModal
+        isOpen={isModalOpen}
+        title="Warning"
+        message="This website plays audio."
+        onConfirm={handleSpeak}
+        onCancel={() => setIsModalOpen(false)}
+      />
+    </>
   );
 }
