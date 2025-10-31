@@ -1,12 +1,12 @@
 "use client";
 
-import { Suspense } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import SpiralDev from "@/components/functional/SpiralDev";
-import { fetchSpiralText } from "@/utils/fetch";
+import { fetchRandomMessagesAction } from "@/app/actions";
 
 export default function Home() {
   const [text, setText] = useState<string | undefined>("");
+  const [isPending, startTransition] = useTransition();
   const [maxR, setMaxR] = useState<number>(250);
   const [turns, setTurns] = useState<number>(6);
   const [startOffset, setStartOffset] = useState<number>(10);
@@ -16,8 +16,10 @@ export default function Home() {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   const handleSpawn = async () => {
-    const output = await fetchSpiralText("ja-JP", "love", 5);
-    setText(output);
+    startTransition(async () => {
+      const output = await fetchRandomMessagesAction("ja-JP", "love", 5);
+      setText(output);
+    });
   };
 
   useEffect(() => {
@@ -27,24 +29,25 @@ export default function Home() {
   return (
     <div className="relative w-screen h-screen bg-black overflow-hidden">
       {/* Fullscreen SVG */}
-      <Suspense>
-        <svg
-          ref={svgRef}
-          className="w-full h-full"
-          viewBox="0 0 1600 900"
-          preserveAspectRatio="xMidYMid slice"
-        >
-          <SpiralDev
-            text={text}
-            svgRef={svgRef}
-            maxR={maxR}
-            turns={turns}
-            startOffset={startOffset}
-            initialFontSize={initialFontSize}
-            cutoffR={cutoffR}
-          />
-        </svg>
-      </Suspense>
+      <svg
+        ref={svgRef}
+        className="w-full h-full"
+        viewBox="0 0 1600 900"
+        preserveAspectRatio="xMidYMid slice"
+      >
+        <SpiralDev
+          text={text}
+          svgRef={svgRef}
+          maxR={maxR}
+          turns={turns}
+          startOffset={startOffset}
+          initialFontSize={initialFontSize}
+          cutoffR={cutoffR}
+        />
+      </svg>
+
+      {isPending ? "Fetching text..." : ""}
+
       <div className="absolute bottom-5 right-5 flex items-center gap-2 text-sm font-medium text-white">
         <label className="text-gray-300">cutoffR: {cutoffR}</label>
         <input

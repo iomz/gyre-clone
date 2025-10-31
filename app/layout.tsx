@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
@@ -22,7 +23,7 @@ export default function RootLayout({
       <body
         className={`${geist.variable} min-h-screen bg-black text-white antialiased`}
       >
-        {children}
+        <Suspense>{children}</Suspense>
       </body>
     </html>
   );

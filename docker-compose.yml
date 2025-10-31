@@ -10,3 +10,5 @@ services:
       - "127.0.0.1:9999:3000"
     environment:
       TZ: "Asia/Tokyo"
+    volumes:
+      - ./.env.local:/app/.env.local
