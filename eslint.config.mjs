@@ -21,7 +21,7 @@ const eslintConfig = [
     ],
   },
   {
-    files: ["**/*.tsx"],
+    files: ["**/*.tsx", "**/*.ts"],
     rules: {
       "react-hooks/exhaustive-deps": "off",
     },

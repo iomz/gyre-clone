@@ -1,21 +1,20 @@
 "use client";
 
 import { useContext, useEffect, useRef, useState, RefObject } from "react";
-import {
-  Center,
-  CharData,
-  SpiralContext,
-  TriggerContext,
-} from "@/app/lib/definitions";
-import Char from "@/app/ui/char";
+import { generateRandomId } from "@/utils/random";
+import { SpiralContext, TriggerContext } from "@/lib/context";
+import { CharData, Center } from "@/types/definitions";
+import Char from "@/components/ui/Char";
 
 export default function Spiral({
   svgRef,
+  id,
   center,
   text,
   language,
 }: {
   svgRef: RefObject<SVGSVGElement | null>;
+  id: number;
   center: Center;
   text: string | undefined;
   language: string;
@@ -135,7 +134,7 @@ export default function Spiral({
     }
 
     // set a unique id for the path
-    setPathId(Math.random().toString(36).replace("0.", ""));
+    setPathId(generateRandomId());
 
     return () => {
       path.removeAttribute("d");
@@ -188,7 +187,7 @@ export default function Spiral({
     } else if (index + 1 > tspans.length) {
       if (!done) {
         notify(
-          `[${pathId}] tspans.length: ${tspans.length} circumference: ${circumference}`,
+          `[spiral:${id}] tspans.length: ${tspans.length} circumference: ${circumference}`,
         );
         setDone(true); // notify only once
       }

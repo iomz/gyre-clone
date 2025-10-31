@@ -1,21 +1,5 @@
 import { createContext } from "react";
 
-export interface Center {
-  x: number;
-  y: number;
-}
-
-export interface CharData {
-  w: string;
-  fontSize: number;
-  opacity: number;
-}
-
-export interface ConfigDev {
-  pointsPerTurn: number;
-  typeSpeed: number;
-}
-
 export const SpiralContext = createContext({
   cutoffFontSize: 0.2,
   cutoffRRatio: 1 / 5 / 2, // of window height
@@ -40,7 +24,7 @@ export const SpiralContext = createContext({
   startOffsetMax: 15,
   turnMax: 10,
   turnMin: 4,
-  typeSpeed: 1, // in ms
+  typeSpeed: 50, // in ms
 });
 
 export const TriggerContext = createContext<(msg: string) => void>(() => {});

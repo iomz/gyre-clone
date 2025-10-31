@@ -2,10 +2,11 @@
 
 import { Suspense } from "react";
 import { useEffect, useRef, useState } from "react";
-import Spiral from "@/app/ui/spiral-dev";
+import SpiralDev from "@/components/functional/SpiralDev";
+import { fetchSpiralText } from "@/utils/fetch";
 
 export default function Home() {
-  const [text, setText] = useState<string>("");
+  const [text, setText] = useState<string | undefined>("");
   const [maxR, setMaxR] = useState<number>(250);
   const [turns, setTurns] = useState<number>(6);
   const [startOffset, setStartOffset] = useState<number>(10);
@@ -13,23 +14,14 @@ export default function Home() {
   const [cutoffR, setCutoffR] = useState<number>(80);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
-  const config = {
-    pointsPerTurn: 240,
-    typeSpeed: 50, // in ms
+
+  const handleSpawn = async () => {
+    const output = await fetchSpiralText("ja-JP", "love", 5);
+    setText(output);
   };
 
-  // fetch text from API
   useEffect(() => {
-    async function fetchText() {
-      let res = null;
-      let data: { text: string } | null = null;
-      res = await fetch(`/api/text`);
-      data = await res.json();
-      if (data) {
-        setText(data.text ?? "");
-      }
-    }
-    fetchText();
+    handleSpawn();
   }, []);
 
   return (
@@ -42,8 +34,7 @@ export default function Home() {
           viewBox="0 0 1600 900"
           preserveAspectRatio="xMidYMid slice"
         >
-          <Spiral
-            config={config}
+          <SpiralDev
             text={text}
             svgRef={svgRef}
             maxR={maxR}

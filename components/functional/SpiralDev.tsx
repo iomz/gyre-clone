@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState, RefObject } from "react";
-import { Center, ConfigDev } from "@/app/lib/definitions";
+import { useContext, useEffect, useRef, useState, RefObject } from "react";
+import { Center } from "@/types/definitions";
+import { SpiralContext } from "@/lib/context";
 
-export default function Spiral({
-  config,
+export default function SpiralDev({
   text,
   svgRef,
   maxR,
@@ -13,8 +13,7 @@ export default function Spiral({
   initialFontSize,
   cutoffR,
 }: {
-  config: ConfigDev;
-  text: string;
+  text: string | undefined;
   svgRef: RefObject<SVGSVGElement | null>;
   maxR: number;
   turns: number;
@@ -24,10 +23,9 @@ export default function Spiral({
 }) {
   const [pathId, setPathId] = useState<string>("");
   const [circumference, setCircumference] = useState<number>(0);
-  const [index, setIndex] = useState<number>(-1);
-  const [length, setLength] = useState<number>(0);
   const pathRef = useRef<SVGPathElement>(null);
   const textPathRef = useRef<SVGTextPathElement>(null);
+  const config = useContext(SpiralContext);
 
   const addTspan = (w: string, fontSize: number, opacity: number = 0) => {
     const tspan = document.createElementNS(
@@ -88,8 +86,8 @@ export default function Spiral({
       "viewBox",
       `0 0 ${Math.max(100, vw)} ${Math.max(100, vh)}`,
     );
-    const width = parseFloat(svg.viewBox.baseVal.width);
-    const height = parseFloat(svg.viewBox.baseVal.height);
+    const width = parseFloat(svg.viewBox.baseVal.width.toString());
+    const height = parseFloat(svg.viewBox.baseVal.height.toString());
     const spiralCenter = {
       x: width / 2,
       y: height / 2,
@@ -111,49 +109,25 @@ export default function Spiral({
    *
    * */
   useEffect(() => {
-    const tspans = textPathRef.current.children;
-    if (tspans.length > 0) {
+    const tspans = textPathRef.current?.children;
+    if (tspans!.length > 0) {
+      return;
+    }
+    if (circumference == 0) {
       return;
     }
     // populate the spiral text
-    let cumulativeLength = 0;
-    for (let index = 0; index < text.length; index++) {
-      if (cumulativeLength > circumference) {
+    for (let index = 0; index < text!.length; index++) {
+      if (index > circumference) {
         break;
       }
-      const fontSize = (1 - cumulativeLength / circumference) * initialFontSize;
-      cumulativeLength += (fontSize * Math.PI) / 2;
-      addTspan(text[index], fontSize);
-      setIndex(0);
+      const fontSize =
+        (1 - index / (config.fontScaleConstant * circumference)) *
+        initialFontSize;
+      const opacity = 1 - index / circumference;
+      addTspan(text!.charAt(index), fontSize, opacity);
     }
   }, [text, initialFontSize, circumference]);
-
-  /* set the opacity to realize the typewriter effect
-   * index -> used for the timer
-   *
-   * */
-  useEffect(() => {
-    // set the opacity for each character for typewriter effect
-    const tspans = textPathRef.current.children;
-    console.log(tspans.length, length, circumference);
-    if (
-      tspans.length == 0 ||
-      length > tspans.length ||
-      length > circumference ||
-      index < 0
-    ) {
-      return;
-    }
-    const timer = setTimeout(() => {
-      const fontSize = (1 - length / circumference) * initialFontSize;
-      setLength(length + (fontSize * Math.PI) / 2);
-      const opacity = 1 - length / circumference;
-      tspans[index].style.fontSize = `${fontSize}em`;
-      tspans[index].style.opacity = `${opacity}`;
-      setIndex(index + 1);
-    }, config.typeSpeed);
-    return () => clearTimeout(timer);
-  }, [index]);
 
   return (
     <>
