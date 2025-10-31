@@ -11,7 +11,7 @@ export async function fetchRandomMessagesAction(
 
   const match: Record<string, string> = {};
   if (topic) {
-    match.category = topic;
+    match.topic = topic;
   }
   if (language) {
     match.language = language;
@@ -59,5 +59,5 @@ export async function fetchRandomMessagesAction(
   });
 
   const result = await Message.aggregate(pipeline);
-  return result[0]?.concatenatedText || "error";
+  return result[0]?.concatenatedText || "something went wrong";
 }

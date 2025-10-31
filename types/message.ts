@@ -6,7 +6,7 @@ const messageSchema = new Schema(
       type: String,
       required: true,
     },
-    category: {
+    topic: {
       type: String,
       required: true,
       default: "general", // fallback value

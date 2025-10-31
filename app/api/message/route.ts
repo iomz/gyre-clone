@@ -3,11 +3,11 @@ import { postMessage } from "@/services/messageService";
 
 export async function POST(req: Request) {
   try {
-    const { text, category, language } = await req.json();
+    const { text, topic, language } = await req.json();
     if (!text) {
       return NextResponse.json({ error: "Missing text" }, { status: 400 });
     }
-    const message = await postMessage(text, category, language);
+    const message = await postMessage(text, topic, language);
 
     return NextResponse.json({ success: true, message });
   } catch (err) {
