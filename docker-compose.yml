@@ -26,3 +26,8 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: gyre-world-reflector
+    volumes:
+      - data:/data/db
+
+volumes:
+  data: {}
