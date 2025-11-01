@@ -38,15 +38,18 @@ export default function App() {
   const [hydrated, setHydrated] = useState(false);
   const [center, setCenter] = useState<Center>({ x: 0, y: 0 });
   const [isPending, startTransition] = useTransition();
+  const [speaking, setSpeaking] = useState(false);
   const svgRef = useRef<SVGSVGElement | null>(null);
   const config = useContext(SpiralContext);
 
   const handleLanguageSelect = (l: string) => {
+    setSpeaking(false);
     setLanguage(l);
     setSpirals([]);
   };
 
   const handleTopicSelect = (t: string) => {
+    setSpeaking(false);
     setTopic(t);
     setSpirals([]);
   };
@@ -125,6 +128,8 @@ export default function App() {
             language={language}
             topic={topic}
             selectedVoice={selectedVoice}
+            speaking={speaking}
+            setSpeakingAction={setSpeaking}
           />
         </SpiralContext.Provider>
 

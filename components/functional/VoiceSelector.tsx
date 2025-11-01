@@ -23,13 +23,18 @@ export default function VoiceSelector({
         //const preferred = v.find((x) => x.lang === language) || v[0];
         if (language.startsWith("en")) {
           const preferred =
-            v.find((x) => x.name === "Google UK English Male") || v[0];
+            v.find((x) => x.name.includes("Google UK English Male")) || v[0];
           setSelectedVoiceAction(preferred);
         } else if (language.startsWith("ja")) {
           const preferred = v.find((x) => x.name.startsWith("O-Ren")) || v[0];
           setSelectedVoiceAction(preferred);
         } else if (language.startsWith("pt")) {
           const preferred = v.find((x) => x.name.startsWith("Joana")) || v[0];
+          setSelectedVoiceAction(preferred);
+        } else {
+          const preferred =
+            v.find((x) => x.name.includes("Google") && x.lang === language) ||
+            v[0];
           setSelectedVoiceAction(preferred);
         }
       }

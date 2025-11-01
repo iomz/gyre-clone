@@ -29,6 +29,6 @@ See the running example at https://gyre-clone.sazanka.io/
 
 ## Extend the topics and the languages
 
-1. Create a new text file contains _a paragraph per line_ (e.g., `food_en-US.txt`)
-2. Run the `scripts/post.js` with your `endpoint`, `topic`, `language`, and `file`
-   - `node scripts/post.js http://localhost:9763/api/message food en-US food_en-US.txt`
+1. Create a new text file contains _a paragraph per line_. The file name should be `<topic>_<language code>.txt` (e.g., `food_en-US.txt`).
+2. Run the `scripts/post.js` with your `endpoint` and `dir` that contains the text file(s). In the example below, the text file is placed under `data` directory.
+   - `node scripts/post.js http://localhost:9763/api/message data`

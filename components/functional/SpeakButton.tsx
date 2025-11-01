@@ -1,6 +1,13 @@
 "use client";
 
-import { useContext, useState, useTransition } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+  useTransition,
+} from "react";
 import { VoiceOption } from "@/types/definitions";
 import { SpiralContext } from "@/lib/context";
 import { playRadioNoise } from "@/utils/audio";
@@ -11,13 +18,16 @@ export default function SpeakButton({
   language,
   topic,
   selectedVoice,
+  speaking,
+  setSpeakingAction,
 }: {
   language: string;
   topic: string;
   selectedVoice: VoiceOption;
+  speaking: boolean;
+  setSpeakingAction: Dispatch<SetStateAction<boolean>>;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(true);
-  const [speaking, setSpeaking] = useState(false);
   const [isPending, startTransition] = useTransition();
   const config = useContext(SpiralContext);
 
@@ -45,12 +55,18 @@ export default function SpeakButton({
     setIsModalOpen(false);
     if (speaking) {
       window.speechSynthesis.cancel();
-      setSpeaking(false);
+      setSpeakingAction(false);
       return;
     }
-    setSpeaking(true);
+    setSpeakingAction(true);
     speak();
   };
+
+  useEffect(() => {
+    if (!speaking) {
+      window.speechSynthesis.cancel();
+    }
+  }, [speaking]);
 
   return (
     <>

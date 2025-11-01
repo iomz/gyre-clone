@@ -36,7 +36,7 @@ export default function LanguageSelector({
       >
         {languages.map((l, i) => (
           <option key={i} value={l}>
-            {languageName(l)} ({l})
+            {languageName(l)}
           </option>
         ))}
       </select>
