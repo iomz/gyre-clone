@@ -44,12 +44,14 @@ export default function App() {
 
   const handleLanguageSelect = (l: string) => {
     setSpeaking(false);
+    randmizeCenter();
     setLanguage(l);
     setSpirals([]);
   };
 
   const handleTopicSelect = (t: string) => {
     setSpeaking(false);
+    randmizeCenter();
     setTopic(t);
     setSpirals([]);
   };
@@ -78,12 +80,16 @@ export default function App() {
     }
   };
 
-  useEffect(() => {
+  const randmizeCenter = () => {
     /* randomize the center position */
     setCenter({
       x: randomIntRange(config.cXMin, config.cXMax),
       y: randomIntRange(config.cYMin, config.cYMax),
     });
+  };
+
+  useEffect(() => {
+    randmizeCenter();
     setHydrated(true);
   }, []);
 
@@ -98,7 +104,7 @@ export default function App() {
 
   return (
     <div className="relative w-screen h-screen bg-black overflow-hidden">
-      <Logo center={center} language={language} />
+      <Logo center={center} topic={topic} language={language} />
 
       <TriggerContext.Provider value={handleTrigger}>
         <SpiralSVG svgRef={svgRef} language={language} spirals={spirals} />
