@@ -64,7 +64,7 @@ readdir(dir, (err, files) => {
       const lines = fileContent.split("\n").filter(Boolean);
 
       // --- Step 4: Send POST requests ---
-      lines.forEach((text, _) => {
+      lines.forEach((text) => {
         postData(endpoint, { text, topic, language });
       });
     }
