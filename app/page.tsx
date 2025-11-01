@@ -32,7 +32,7 @@ const notoSerifJP = Noto_Serif_JP({
 
 export default function App() {
   const [topic, setTopic] = useSyncedParam("q", "love");
-  const [language, setLanguage] = useSyncedParam("hl", "en-US");
+  const [language, setLanguage] = useSyncedParam("hl", "en-GB");
   const [selectedVoice, setSelectedVoice] = useState<VoiceOption>(null);
   const [spirals, setSpirals] = useState<React.JSX.Element[]>([]);
   const [hydrated, setHydrated] = useState(false);
