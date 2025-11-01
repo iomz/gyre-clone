@@ -24,8 +24,8 @@ export default function Logo({
         className="glowWrapper"
         style={{
           position: "absolute",
-          right: `${100 - center?.x - 4}%`,
-          bottom: `${100 - center?.y - 2}%`,
+          right: `calc(${100 - center?.x}% - 70px)`,
+          bottom: `calc(${100 - center?.y}% - 30px)`,
         }}
       >
         <Image src={logoPath} alt="logo" width={246} height={95} />
