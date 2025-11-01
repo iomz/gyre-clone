@@ -6,7 +6,7 @@ import { request } from "https";
 const [, , endpoint, topic, language, filePath] = process.argv;
 
 if (!endpoint || !topic || !language || !filePath) {
-  console.error("Usage: node post.js <topic> <language> <file>");
+  console.error("Usage: node post.js <endpoint> <topic> <language> <file>");
   process.exit(1);
 }
 
