@@ -3,9 +3,11 @@ import { Center } from "@/types/definitions";
 
 export default function Logo({
   center,
+  topic,
   language,
 }: {
   center: Center;
+  topic: string;
   language: string;
 }) {
   let logoPath = "/logo.webp";
@@ -14,21 +16,20 @@ export default function Logo({
   }
   return (
     <a
-      href="https://github.com/iomz/gyre-clone"
+      href={`https://google.com/search?q=${topic}`}
       target="_blank"
       rel="noopener noreferrer"
     >
-      <Image
-        src={logoPath}
-        alt="logo"
-        width={246}
-        height={95}
+      <div
+        className="glowWrapper"
         style={{
           position: "absolute",
           right: `${100 - center?.x - 4}%`,
           bottom: `${100 - center?.y - 2}%`,
         }}
-      />
+      >
+        <Image src={logoPath} alt="logo" width={246} height={95} />
+      </div>
     </a>
   );
 }
