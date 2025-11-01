@@ -21,8 +21,14 @@ See the running example at https://gyre-clone.sazanka.io/
 1. Rename the `.env.local.example` to `.env.local`, which contains a MongoDB URL to access the docker service.
    - `mv .env.local.example .env.local`
 2. Download a preset data (`messages.json`) inside `/data` directory to seed the database.
-   - https://github.com/iomz/gyre-clone/releases/download/v1.0.0/messages.json
+   - `mkdir data && curl -o data/messages.json https://gyre-clone.sazanka.io/api/message/export`
 3. Build the docker image.
    - `docker compose build`
-4. Run the services; the app is up and running at localhost:9999
+4. Run the services; the app is up and running at localhost:9763
    - `docker compose up -d`
+
+## Extend the topics and the languages
+
+1. Create a new text file contains _a paragraph per line_ (e.g., `food_en-US.txt`)
+2. Run the `scripts/post.js` with your `endpoint`, `topic`, `language`, and `file`
+   - `node scripts/post.js http://localhost:9763/api/message food en-US food_en-US.txt`

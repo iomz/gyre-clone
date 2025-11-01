@@ -2,15 +2,15 @@ import { readFileSync } from "fs";
 import { resolve } from "path";
 import { request } from "https";
 
-const endpoint = "https://gyre-clone.sazanka.io/api/message";
-const url = new URL(endpoint);
 // --- Step 1: Get CLI arguments ---
-const [, , topic, language, filePath] = process.argv;
+const [, , endpoint, topic, language, filePath] = process.argv;
 
-if (!filePath || !topic || !language) {
+if (!endpoint || !topic || !language || !filePath) {
   console.error("Usage: node post.js <topic> <language> <file>");
   process.exit(1);
 }
+
+const url = new URL(endpoint);
 
 // --- Step 2: Read file contents ---
 const absPath = resolve(filePath);
