@@ -21,11 +21,9 @@ svg use {
 
 .svg-logo {
   fill-rule: evenodd;
-  fill: white;
 }
 
 text.spiral-text {
-  fill: white;
   overflow: hidden; /* Ensures the content is not revealed until the animation */
   animation: typing 3.5s steps(40, end);
 }

@@ -6,12 +6,12 @@ export default function Header() {
 
   return (
     <>
-      <div className="absolute top-5 left-5 flex items-center gap-2 text-sm font-medium text-white">
+      <div className="absolute top-5 left-5 flex items-center gap-2 text-sm font-medium">
         <a
           href="https://gyre-omotesando.com/"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 text-gray-300 hover:text-sky-300"
+          className="flex items-center gap-2"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -20,7 +20,7 @@ export default function Header() {
             viewBox="0 0 227 86.06"
           >
             <path
-              className="svg-logo"
+              className="svg-logo dark:fill-white"
               d={d}
               transform={`translate(-3544.97 -1165.97)`}
             ></path>
@@ -28,15 +28,14 @@ export default function Header() {
         </a>
       </div>
 
-      <div className="absolute top-5 right-5 flex items-center gap-2 text-sm font-medium text-white">
+      <div className="absolute top-5 right-5 flex items-center gap-2 text-sm font-medium">
         <a
           href="https://github.com/iomz/gyre-clone"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 text-gray-300 hover:text-sky-300"
+          className="flex items-center gap-2 hover:text-sky-300"
         >
           <FaGithub size={24} />
-          <span>GitHub</span>
         </a>
       </div>
     </>

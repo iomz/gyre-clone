@@ -4,7 +4,6 @@ import { useContext, useEffect, useRef, useState, useTransition } from "react";
 import { Roboto, Noto_Serif_JP } from "next/font/google";
 import { Center, VoiceOption } from "@/types/definitions";
 import { SpiralContext, TriggerContext } from "@/lib/context";
-import Logo from "@/components/ui/Logo";
 import Spiral from "@/components/functional/Spiral";
 import SpiralSVG from "@/components/layout/SpiralSVG";
 import SpiralCounter from "@/components/ui/SpiralCounter";
@@ -104,8 +103,8 @@ export default function App() {
   }, [hydrated, spirals]);
 
   return (
-    <div className="relative w-screen h-screen bg-black overflow-hidden">
-      <Logo center={center} topic={topic} language={language} />
+    <div className="relative w-screen h-screen overflow-hidden bg-white dark:bg-black">
+      {/* <Logo center={center} topic={topic} language={language} /> */}
 
       <TriggerContext.Provider value={handleTrigger}>
         <SpiralSVG svgRef={svgRef} language={language} spirals={spirals} />
@@ -113,7 +112,7 @@ export default function App() {
 
       <Header />
 
-      <div className="absolute bottom-5 right-5 flex items-center gap-2 text-sm font-medium text-white">
+      <div className="absolute bottom-5 right-5 flex items-center gap-2 text-sm font-medium">
         <SpiralCounter numberOfSpirals={spirals.length} />
 
         <ModeToggle />
