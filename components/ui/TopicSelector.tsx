@@ -1,6 +1,15 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { fetchTopicsAction } from "@/app/actions";
 
 type HandleTopicSelect = (topic: string) => void;
@@ -23,20 +32,24 @@ export default function TopicSelector({
   }, []);
 
   return (
-    <label className="text-gray-300">
-      Topic:
-      <select
-        disabled={isPending}
-        value={topic}
-        onChange={(e) => onChangeAction(e.target.value)}
-        className="ml-2 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white"
-      >
-        {topics.map((t, i) => (
-          <option key={i} value={t}>
-            {t.charAt(0).toUpperCase() + t.slice(1)}
-          </option>
-        ))}
-      </select>
-    </label>
+    <Select
+      disabled={isPending}
+      value={topic}
+      onValueChange={(v) => onChangeAction(v)}
+    >
+      <SelectTrigger className="w-[180px]">
+        <SelectValue placeholder="Topic" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectLabel>Topic</SelectLabel>
+          {topics.map((t, i) => (
+            <SelectItem key={i} value={t}>
+              {t.charAt(0).toUpperCase() + t.slice(1)}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
   );
 }

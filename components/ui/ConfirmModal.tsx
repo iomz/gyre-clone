@@ -1,5 +1,14 @@
 "use client";
+
 import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -25,25 +34,24 @@ export default function ConfirmModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="bg-zinc-900 text-white p-6 rounded-xl shadow-2xl w-96 animate-fadeIn">
-        <h2 className="text-xl font-semibold mb-2 text-center">{title}</h2>
-        <p className="text-gray-300 mb-6 text-center">{message}</p>
+    <Dialog open={isOpen} onOpenChange={onCancel}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{message}</DialogDescription>
+        </DialogHeader>
         <div className="flex justify-center gap-4">
-          <button
+          <Button
             onClick={onConfirm}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold transition"
+            className="flex-auto bg-sky-600 hover:bg-sky-700 font-semibold"
           >
             OK
-          </button>
-          <button
-            onClick={onCancel}
-            className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition"
-          >
+          </Button>
+          <Button onClick={onCancel} className="flex-auto">
             Stay muted
-          </button>
+          </Button>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

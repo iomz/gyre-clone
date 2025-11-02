@@ -1,6 +1,15 @@
 "use client";
 
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { VoiceOption } from "@/types/definitions";
 
 export default function VoiceSelector({
@@ -52,27 +61,29 @@ export default function VoiceSelector({
   }, [language]);
 
   return (
-    <label className="text-gray-300">
-      Voice:
-      <select
-        value={selectedVoice?.name ?? ""}
-        onChange={(e) => {
-          const opt = e.target.selectedOptions[0];
-          const v = voices.find(
-            (x) => x.name === opt.value && x.lang === opt.dataset.lang,
-          );
-          setSelectedVoiceAction(v || null);
-        }}
-        className="ml-2 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white"
-      >
-        {voices
-          .filter((v) => v.lang.slice(0, 2) === language.slice(0, 2))
-          .map((v, i) => (
-            <option key={i} value={v.name} data-lang={v.lang}>
-              {v.name} - {v.lang}
-            </option>
-          ))}
-      </select>
-    </label>
+    <Select
+      value={`${selectedVoice?.name}|${selectedVoice?.lang}`}
+      onValueChange={(value) => {
+        const [name, lang] = value.split("|");
+        const v = voices.find((x) => x.name === name && x.lang === lang);
+        setSelectedVoiceAction(v || null);
+      }}
+    >
+      <SelectTrigger className="w-[180px]">
+        <SelectValue placeholder="Language" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectLabel>Voice</SelectLabel>
+          {voices
+            .filter((v) => v.lang.slice(0, 2) === language.slice(0, 2))
+            .map((v, i) => (
+              <SelectItem key={i} value={`${v.name}|${v.lang}`}>
+                {v.name} - {v.lang}
+              </SelectItem>
+            ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
   );
 }

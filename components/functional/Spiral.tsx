@@ -215,7 +215,7 @@ export default function Spiral({
         />
       </defs>
 
-      <text className="text-white font-normal spiral-text">
+      <text className="font-normal spiral-text dark:fill-white">
         <textPath
           href={"#" + pathId}
           startOffset={`${startOffset}%`}
