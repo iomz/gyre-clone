@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+
 export default function SpawnButton({
   isPending,
   handleSpawn,
@@ -6,12 +8,12 @@ export default function SpawnButton({
   handleSpawn: () => void;
 }) {
   return (
-    <button
+    <Button
       disabled={isPending}
       onClick={() => handleSpawn()}
-      className="bg-white/10 border border-white/20 hover:bg-white/20 text-white px-3 py-1.5 rounded-md transition"
+      className="hover:bg-white/20"
     >
       Spawn
-    </button>
+    </Button>
   );
 }

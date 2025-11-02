@@ -8,6 +8,7 @@ import Logo from "@/components/ui/Logo";
 import Spiral from "@/components/functional/Spiral";
 import SpiralSVG from "@/components/layout/SpiralSVG";
 import SpiralCounter from "@/components/ui/SpiralCounter";
+import ModeToggle from "@/components/functional/ModeToggle";
 import LanguageSelector from "@/components/ui/LanguageSelector";
 import TopicSelector from "@/components/ui/TopicSelector";
 import Header from "@/components/layout/Header";
@@ -114,6 +115,8 @@ export default function App() {
 
       <div className="absolute bottom-5 right-5 flex items-center gap-2 text-sm font-medium text-white">
         <SpiralCounter numberOfSpirals={spirals.length} />
+
+        <ModeToggle />
 
         <TopicSelector topic={topic} onChangeAction={handleTopicSelect} />
 

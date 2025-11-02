@@ -1,6 +1,15 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { fetchLanguagesAction } from "@/app/actions";
 import { languageName } from "@/utils/language";
 
@@ -26,20 +35,24 @@ export default function LanguageSelector({
   }, [topic]);
 
   return (
-    <label className="text-gray-300">
-      Language:
-      <select
-        disabled={isPending}
-        value={language}
-        onChange={(e) => onChangeAction(e.target.value)}
-        className="ml-2 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white"
-      >
-        {languages.map((l, i) => (
-          <option key={i} value={l}>
-            {languageName(l.slice(0, 2))}
-          </option>
-        ))}
-      </select>
-    </label>
+    <Select
+      disabled={isPending}
+      value={language}
+      onValueChange={(v) => onChangeAction(v)}
+    >
+      <SelectTrigger className="w-[180px]">
+        <SelectValue placeholder="Language" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectLabel>Language</SelectLabel>
+          {languages.map((l, i) => (
+            <SelectItem key={i} value={l}>
+              {languageName(l.slice(0, 2))}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
   );
 }

@@ -8,6 +8,7 @@ import {
   useState,
   useTransition,
 } from "react";
+import { Button } from "@/components/ui/button";
 import { VoiceOption } from "@/types/definitions";
 import { SpiralContext } from "@/lib/context";
 import { playRadioNoise } from "@/utils/audio";
@@ -77,15 +78,13 @@ export default function SpeakButton({
 
   return (
     <>
-      <button
+      <Button
         disabled={isPending}
         onClick={handleSpeak}
-        className={`bg-white/10 border border-white/20 hover:bg-white/20 text-white px-3 py-1.5 rounded-md transition ${
-          speaking ? "bg-red-400" : "bg-blue-400"
-        } text-white`}
+        className={"hover:bg-white/20"}
       >
         {speaking ? "Mute" : "Speak"}
-      </button>
+      </Button>
 
       <ConfirmModal
         isOpen={isModalOpen}
