@@ -15,7 +15,7 @@ const messageSchema = new Schema(
     language: {
       type: String,
       required: true,
-      default: "en-US", // fallback value
+      default: "en-GB", // fallback value
     },
   },
   { timestamps: true },

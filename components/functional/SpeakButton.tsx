@@ -68,6 +68,13 @@ export default function SpeakButton({
     }
   }, [speaking]);
 
+  useEffect(() => {
+    if (speaking) {
+      window.speechSynthesis.cancel();
+      setSpeakingAction(false);
+    }
+  }, [selectedVoice]);
+
   return (
     <>
       <button

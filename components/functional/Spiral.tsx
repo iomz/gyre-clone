@@ -1,7 +1,7 @@
 "use client";
 
 import { useContext, useEffect, useRef, useState, RefObject } from "react";
-import { generateRandomId } from "@/utils/random";
+import { generateRandomId, randomIntRange } from "@/utils/random";
 import { SpiralContext, TriggerContext } from "@/lib/context";
 import { CharData, Center } from "@/types/definitions";
 import Char from "@/components/ui/Char";
@@ -89,26 +89,24 @@ export default function Spiral({
     // drift the center
     const width = parseFloat(svg.viewBox.baseVal.width.toString());
     const height = parseFloat(svg.viewBox.baseVal.height.toString());
-    const xJitter = Math.floor(Math.random() * config.jitter) - config.jitter;
-    const yJitter = Math.floor(Math.random() * config.jitter) - config.jitter;
+    const xJitter = randomIntRange(-config.jitter, config.jitter);
+    const yJitter = randomIntRange(-config.jitter, config.jitter);
     const spiralCenter = {
       x: center.x * (width / 100) + xJitter,
       y: center.y * (height / 100) + yJitter,
     };
 
     // randomize the turns
-    const turns =
-      Math.floor(Math.random() * (config.turnMax - config.turnMin)) +
-      config.turnMin;
+    const turns = randomIntRange(config.turnMin, config.turnMax);
 
     // randomize the maximum r of the spiral
     const rMax = height * config.rMaxRatio;
     const rMin = height * config.rMinRatio;
     //console.log(`rMax: ${rMax} rMin: ${rMin}`);
-    const maxR = Math.floor(Math.random() * (rMax - rMin) + rMin);
+    const maxR = randomIntRange(rMin, rMax);
 
     // randomize the start percentage of the spiral path
-    setStartOffset(Math.floor(Math.random() * config.startOffsetMax));
+    setStartOffset(randomIntRange(0, config.startOffsetMax));
 
     // randomize the initial font size
     setInitialFontSize(

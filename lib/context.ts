@@ -11,7 +11,7 @@ export const SpiralContext = createContext({
   fontMin: 0.5, // in em
   fontScaleConstant: 1.25,
   japaneseSizeAdjust: 0.8,
-  jitter: 30,
+  jitter: 15,
   numberOfSpirals: 2,
   opacityConstant: 0.9,
   pointsPerTurn: 240,
