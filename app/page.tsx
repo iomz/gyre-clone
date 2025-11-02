@@ -1,12 +1,18 @@
 "use client";
 
-import { useContext, useEffect, useRef, useState, useTransition } from "react";
+import {
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+  useCallback,
+} from "react";
 import { Roboto, Noto_Serif_JP } from "next/font/google";
 import { Center, VoiceOption } from "@/types/definitions";
 import { SpiralContext, TriggerContext } from "@/lib/context";
 import Spiral from "@/components/functional/Spiral";
 import SpiralSVG from "@/components/layout/SpiralSVG";
-import SpiralCounter from "@/components/ui/SpiralCounter";
 import ModeToggle from "@/components/functional/ModeToggle";
 import LanguageSelector from "@/components/ui/LanguageSelector";
 import TopicSelector from "@/components/ui/TopicSelector";
@@ -42,65 +48,78 @@ export default function App() {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const config = useContext(SpiralContext);
 
-  const handleLanguageSelect = (l: string) => {
-    setSpeaking(false);
-    randmizeCenter();
-    setLanguage(l);
-    setSpirals([]);
-  };
-
-  const handleTopicSelect = (t: string) => {
-    setSpeaking(false);
-    randmizeCenter();
-    setTopic(t);
-    setSpirals([]);
-  };
-
-  const handleSpawn = async () => {
-    startTransition(async () => {
-      const text = await fetchRandomMessagesAction(language, topic, 5);
-      const newSpiral = (
-        <Spiral
-          key={spirals.length}
-          svgRef={svgRef}
-          id={spirals.length}
-          center={center}
-          text={text}
-          language={language}
-        />
-      );
-      setSpirals((prev) => [...prev, newSpiral]);
-    });
-  };
-
-  const handleTrigger = (msg: string) => {
-    console.log(msg);
-    if (spirals.length < config.spiralMax) {
-      handleSpawn();
-    }
-  };
-
-  const randmizeCenter = () => {
+  const randomizeCenter = useCallback(() => {
     /* randomize the center position */
     setCenter({
       x: randomIntRange(config.cXMin, config.cXMax),
       y: randomIntRange(config.cYMin, config.cYMax),
     });
-  };
+  }, [config.cXMin, config.cXMax, config.cYMin, config.cYMax]);
+
+  const handleLanguageSelect = useCallback(
+    (l: string) => {
+      setSpeaking(false);
+      randomizeCenter();
+      setLanguage(l);
+      setSpirals([]);
+    },
+    [randomizeCenter, setLanguage],
+  );
+
+  const handleTopicSelect = useCallback(
+    (t: string) => {
+      setSpeaking(false);
+      randomizeCenter();
+      setTopic(t);
+      setSpirals([]);
+    },
+    [randomizeCenter, setTopic],
+  );
+
+  const handleSpawn = useCallback(async () => {
+    startTransition(async () => {
+      const text = await fetchRandomMessagesAction(language, topic, 5);
+      setSpirals((prev) => {
+        const newSpiral = (
+          <Spiral
+            key={prev.length}
+            svgRef={svgRef}
+            id={prev.length}
+            center={center}
+            text={text}
+            language={language}
+          />
+        );
+        return [...prev, newSpiral];
+      });
+    });
+  }, [language, topic, center, startTransition]);
+
+  const handleTrigger = useCallback(
+    (msg: string) => {
+      if (process.env.NODE_ENV === "development") {
+        console.log(msg);
+      }
+      if (spirals.length < config.spiralMax) {
+        handleSpawn();
+      }
+    },
+    [spirals.length, config.spiralMax, handleSpawn],
+  );
 
   useEffect(() => {
-    randmizeCenter();
+    randomizeCenter();
     setHydrated(true);
-  }, []);
+  }, [randomizeCenter]);
 
   useEffect(() => {
-    if (hydrated && spirals.length == 0) {
+    if (hydrated && spirals.length === 0) {
       const t = setTimeout(() => {
         handleSpawn();
       }, 1000);
       return () => clearTimeout(t);
     }
-  }, [hydrated, spirals]);
+  }, [hydrated, spirals.length, handleSpawn]);
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-white dark:bg-black">
@@ -113,8 +132,6 @@ export default function App() {
       <Header />
 
       <div className="absolute bottom-5 right-5 flex items-center gap-2 text-sm font-medium">
-        <SpiralCounter numberOfSpirals={spirals.length} />
-
         <ModeToggle />
 
         <TopicSelector topic={topic} onChangeAction={handleTopicSelect} />
@@ -141,7 +158,11 @@ export default function App() {
           />
         </SpiralContext.Provider>
 
-        <SpawnButton isPending={isPending} handleSpawn={handleSpawn} />
+        <SpawnButton
+          numberOfSpiral={spirals.length}
+          isPending={isPending}
+          handleSpawn={handleSpawn}
+        />
       </div>
     </div>
   );
