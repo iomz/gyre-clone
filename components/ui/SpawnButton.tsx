@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
 
 export default function SpawnButton({
+  numberOfSpiral,
   isPending,
   handleSpawn,
 }: {
+  numberOfSpiral: number;
   isPending: boolean;
   handleSpawn: () => void;
 }) {
@@ -13,7 +15,7 @@ export default function SpawnButton({
       onClick={() => handleSpawn()}
       className="hover:bg-white/20"
     >
-      Spawn
+      Spawn: {numberOfSpiral}
     </Button>
   );
 }

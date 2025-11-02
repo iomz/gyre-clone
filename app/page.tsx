@@ -13,7 +13,6 @@ import { Center, VoiceOption } from "@/types/definitions";
 import { SpiralContext, TriggerContext } from "@/lib/context";
 import Spiral from "@/components/functional/Spiral";
 import SpiralSVG from "@/components/layout/SpiralSVG";
-import SpiralCounter from "@/components/ui/SpiralCounter";
 import ModeToggle from "@/components/functional/ModeToggle";
 import LanguageSelector from "@/components/ui/LanguageSelector";
 import TopicSelector from "@/components/ui/TopicSelector";
@@ -133,8 +132,6 @@ export default function App() {
       <Header />
 
       <div className="absolute bottom-5 right-5 flex items-center gap-2 text-sm font-medium">
-        <SpiralCounter numberOfSpirals={spirals.length} />
-
         <ModeToggle />
 
         <TopicSelector topic={topic} onChangeAction={handleTopicSelect} />
@@ -161,7 +158,11 @@ export default function App() {
           />
         </SpiralContext.Provider>
 
-        <SpawnButton isPending={isPending} handleSpawn={handleSpawn} />
+        <SpawnButton
+          numberOfSpiral={spirals.length}
+          isPending={isPending}
+          handleSpawn={handleSpawn}
+        />
       </div>
     </div>
   );
