@@ -38,7 +38,6 @@ export default function SpeakButton({
 
     startTransition(async () => {
       const text = await fetchRandomMessagesAction(language, topic, 1);
-      //console.log("I should be speaking...");
       const utter = new SpeechSynthesisUtterance(text);
       utter.voice = selectedVoice ?? null;
       utter.lang = language;
@@ -53,6 +52,12 @@ export default function SpeakButton({
   };
 
   const handleSpeak = () => {
+    /* somehow this enables speech on iOS */
+    const utter = new SpeechSynthesisUtterance("");
+    utter.voice = selectedVoice;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utter);
+
     setIsModalOpen(false);
     if (speaking) {
       window.speechSynthesis.cancel();
@@ -81,7 +86,7 @@ export default function SpeakButton({
       <Button
         disabled={isPending}
         onClick={handleSpeak}
-        className={"hover:bg-white/20"}
+        className={"hover:bg-white/20 w-[180px]"}
       >
         {speaking ? "Mute" : "Speak"}
       </Button>

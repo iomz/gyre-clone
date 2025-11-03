@@ -13,7 +13,7 @@ export default function SpawnButton({
     <Button
       disabled={isPending}
       onClick={() => handleSpawn()}
-      className="hover:bg-white/20"
+      className="hover:bg-white/20 w-[180px] "
     >
       Spawn: {numberOfSpiral}
     </Button>

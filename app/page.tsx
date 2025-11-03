@@ -131,38 +131,50 @@ export default function App() {
 
       <Header />
 
-      <div className="absolute bottom-5 right-5 flex items-center gap-2 text-sm font-medium">
-        <ModeToggle />
+      <div className="absolute bottom-5 right-5 flex flex-col items-center gap-2 text-sm font-medium sm:flex-row sm:justify-between">
+        <div className="mb-2 sm:mb-0">
+          <ModeToggle />
+        </div>
 
-        <TopicSelector topic={topic} onChangeAction={handleTopicSelect} />
+        <div className="mb-2 sm:mb-0">
+          <TopicSelector topic={topic} onChangeAction={handleTopicSelect} />
+        </div>
 
-        <LanguageSelector
-          language={language}
-          topic={topic}
-          onChangeAction={handleLanguageSelect}
-        />
-
-        <VoiceSelector
-          language={language}
-          selectedVoice={selectedVoice}
-          setSelectedVoiceAction={setSelectedVoice}
-        />
-
-        <SpiralContext.Provider value={config}>
-          <SpeakButton
+        <div className="mb-2 sm:mb-0">
+          <LanguageSelector
             language={language}
             topic={topic}
-            selectedVoice={selectedVoice}
-            speaking={speaking}
-            setSpeakingAction={setSpeaking}
+            onChangeAction={handleLanguageSelect}
           />
-        </SpiralContext.Provider>
+        </div>
 
-        <SpawnButton
-          numberOfSpiral={spirals.length}
-          isPending={isPending}
-          handleSpawn={handleSpawn}
-        />
+        <div className="mb-2 sm:mb-0">
+          <VoiceSelector
+            language={language}
+            selectedVoice={selectedVoice}
+            setSelectedVoiceAction={setSelectedVoice}
+          />
+        </div>
+
+        <div className="mb-2 sm:mb-0">
+          <SpiralContext.Provider value={config}>
+            <SpeakButton
+              language={language}
+              topic={topic}
+              selectedVoice={selectedVoice}
+              speaking={speaking}
+              setSpeakingAction={setSpeaking}
+            />
+          </SpiralContext.Provider>
+        </div>
+
+        <div className="mb-2 sm:mb-0">
+          <SpawnButton
+            numberOfSpiral={spirals.length}
+            isPending={isPending}
+            handleSpawn={handleSpawn}
+          />
+        </div>
       </div>
     </div>
   );
