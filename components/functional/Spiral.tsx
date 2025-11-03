@@ -102,7 +102,6 @@ export default function Spiral({
     // randomize the maximum r of the spiral
     const rMax = height * config.rMaxRatio;
     const rMin = height * config.rMinRatio;
-    //console.log(`rMax: ${rMax} rMin: ${rMin}`);
     const maxR = randomIntRange(rMin, rMax);
 
     // randomize the start percentage of the spiral path
@@ -179,7 +178,6 @@ export default function Spiral({
    * */
   useEffect(() => {
     const tspans = textPathRef.current!.children;
-    //console.log(circumference, tspans.length, index);
     if (circumference == 0 || tspans.length < 2 || index < 0) {
       return;
     } else if (index + 1 > tspans.length) {

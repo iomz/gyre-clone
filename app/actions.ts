@@ -1,11 +1,12 @@
 "use server";
 import { connectDB } from "@/lib/db";
 import { Message } from "@/types/message";
+import type { PipelineStage } from "mongoose";
 
 export async function fetchLanguagesAction(topic: string) {
   await connectDB();
 
-  const uniqueLanguages = await Message.distinct("language", { topic: topic });
+  const uniqueLanguages = await Message.distinct("language", { topic });
   return uniqueLanguages;
 }
 
@@ -31,8 +32,9 @@ export async function fetchRandomMessagesAction(
     match.language = language;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const pipeline: any[] = [];
+  // MongoDB aggregation pipeline - using Record for type safety
+  // while maintaining flexibility for complex MongoDB aggregation operators
+  const pipeline: Array<Record<string, unknown>> = [];
 
   // Optional filters
   if (Object.keys(match).length > 0) {
@@ -72,6 +74,8 @@ export async function fetchRandomMessagesAction(
     },
   });
 
-  const result = await Message.aggregate(pipeline);
+  const result = await Message.aggregate(
+    pipeline as unknown as PipelineStage[],
+  );
   return result[0]?.concatenatedText || "something went wrong";
 }

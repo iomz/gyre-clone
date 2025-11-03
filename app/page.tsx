@@ -8,8 +8,8 @@ import {
   useTransition,
   useCallback,
 } from "react";
-import { Roboto, Noto_Serif_JP } from "next/font/google";
 import { Center, VoiceOption } from "@/types/definitions";
+import { Roboto, Noto_Serif_JP } from "next/font/google";
 import { SpiralContext, TriggerContext } from "@/lib/context";
 import Spiral from "@/components/functional/Spiral";
 import SpiralSVG from "@/components/layout/SpiralSVG";
