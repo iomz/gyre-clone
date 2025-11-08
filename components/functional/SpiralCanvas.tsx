@@ -117,7 +117,12 @@ export default function SpiralCanvas() {
       off.width = size * dpi;
       off.height = size * dpi;
 
-      const octx = off.getContext("2d")!;
+      const octx = off.getContext("2d");
+      if (!octx) {
+        console.error("Failed to get 2D context for offscreen canvas");
+        // Return a minimal valid result
+        return { canvas: off, w: size, h: size };
+      }
       octx.scale(dpi, dpi);
       octx.translate(size / 2, size / 2);
 
