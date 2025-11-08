@@ -49,8 +49,8 @@ export default function SpiralCanvas() {
       cx = 0,
       cy = 0;
 
-    const SPIRAL_COUNT = 7;
-    const CENTER_HOLE_RADIUS = 150;
+    const SPIRAL_COUNT = 10;
+    const CENTER_HOLE_RADIUS = 10;
     const spirals: Spiral[] = [];
 
     function resize() {
@@ -131,28 +131,37 @@ export default function SpiralCanvas() {
       octx.lineCap = "round";
       octx.lineWidth = strokeWidth;
 
-      octx.beginPath();
-      let isFirstPoint = true;
+      let prevX: number | null = null;
+      let prevY: number | null = null;
+
       for (let theta = 0; theta < totalTheta; theta += 0.05) {
         const r = spacing * theta;
+
+        if (r < CENTER_HOLE_RADIUS) continue;
+
         const x = r * Math.cos(theta);
         const y = r * Math.sin(theta);
 
         const t = r / maxRadius;
-        const opacity = Math.pow(t, 3);
+        const opacity = Math.pow(t, 1.5);
 
-        octx.strokeStyle = `rgba(255,255,255,${opacity})`;
-
-        if (r < CENTER_HOLE_RADIUS) continue;
-
-        if (isFirstPoint) {
-          octx.moveTo(x, y);
-          isFirstPoint = false;
+        if (prevX === null || prevY === null) {
+          // First valid point - just store it
+          prevX = x;
+          prevY = y;
         } else {
+          // Draw segment from previous point to current point
+          octx.beginPath();
+          octx.moveTo(prevX, prevY);
           octx.lineTo(x, y);
+          octx.strokeStyle = `rgba(255,255,255,${opacity})`;
+          octx.stroke();
+
+          // Update previous coordinates for next segment
+          prevX = x;
+          prevY = y;
         }
       }
-      octx.stroke();
 
       return { canvas: off, w: size, h: size };
     }
@@ -171,11 +180,6 @@ export default function SpiralCanvas() {
         ctx2d.drawImage(s.img, -s.w / 2, -s.h / 2, s.w, s.h);
         ctx2d.restore();
       }
-
-      // ctx.fillStyle = "gray";
-      // ctx.beginPath();
-      // ctx.arc(cx, cy, CENTER_HOLE_RADIUS, 0, Math.PI * 2);
-      // ctx.fill();
 
       animationFrameId = requestAnimationFrame(animate);
     }
