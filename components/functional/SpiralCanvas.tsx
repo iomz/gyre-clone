@@ -28,8 +28,18 @@ export default function SpiralCanvas() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current!;
-    const ctx = canvas.getContext("2d")!;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      console.error("2D context not available");
+      return;
+    }
+
+    // TypeScript doesn't narrow types in closures, so we assert non-null after validation
+    const canvasElement: HTMLCanvasElement = canvas;
+    const ctx2d: CanvasRenderingContext2D = ctx;
 
     const SUPER_DPI = 2.0;
     const dpi = (window.devicePixelRatio || 1) * SUPER_DPI;
@@ -47,12 +57,12 @@ export default function SpiralCanvas() {
       W = window.innerWidth;
       H = window.innerHeight;
 
-      canvas.width = W * dpi;
-      canvas.height = H * dpi;
-      canvas.style.width = `${W}px`;
-      canvas.style.height = `${H}px`;
+      canvasElement.width = W * dpi;
+      canvasElement.height = H * dpi;
+      canvasElement.style.width = `${W}px`;
+      canvasElement.style.height = `${H}px`;
 
-      ctx.setTransform(dpi, 0, 0, dpi, 0, 0);
+      ctx2d.setTransform(dpi, 0, 0, dpi, 0, 0);
 
       cx = W / 2;
       cy = H / 2;
@@ -138,18 +148,18 @@ export default function SpiralCanvas() {
     }
 
     function animate(time: number) {
-      ctx.clearRect(0, 0, W, H);
+      ctx2d.clearRect(0, 0, W, H);
 
       for (const s of spirals) {
         const ease = 0.06 + Math.sin((time + s.timeOffset) * 0.0004) * 0.04;
 
         s.rotation += s.baseSpeed * ease;
 
-        ctx.save();
-        ctx.translate(cx + s.offset.x, cy + s.offset.y);
-        ctx.rotate(s.rotation);
-        ctx.drawImage(s.img, -s.w / 2, -s.h / 2, s.w, s.h);
-        ctx.restore();
+        ctx2d.save();
+        ctx2d.translate(cx + s.offset.x, cy + s.offset.y);
+        ctx2d.rotate(s.rotation);
+        ctx2d.drawImage(s.img, -s.w / 2, -s.h / 2, s.w, s.h);
+        ctx2d.restore();
       }
 
       // ctx.fillStyle = "gray";
@@ -157,20 +167,25 @@ export default function SpiralCanvas() {
       // ctx.arc(cx, cy, CENTER_HOLE_RADIUS, 0, Math.PI * 2);
       // ctx.fill();
 
-      requestAnimationFrame(animate);
+      animationFrameId = requestAnimationFrame(animate);
     }
+
+    let animationFrameId: number;
+
+    const handleResize = () => {
+      resize();
+      generateSpirals();
+    };
 
     resize();
     generateSpirals();
-    requestAnimationFrame(animate);
+    animationFrameId = requestAnimationFrame(animate);
 
-    window.addEventListener("resize", () => {
-      resize();
-      generateSpirals();
-    });
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener("resize", resize);
+      window.removeEventListener("resize", handleResize);
+      cancelAnimationFrame(animationFrameId);
     };
   }, []);
 
