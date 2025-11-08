@@ -127,6 +127,7 @@ export default function SpiralCanvas() {
       octx.lineWidth = strokeWidth;
 
       octx.beginPath();
+      let isFirstPoint = true;
       for (let theta = 0; theta < totalTheta; theta += 0.05) {
         const r = spacing * theta;
         const x = r * Math.cos(theta);
@@ -139,8 +140,12 @@ export default function SpiralCanvas() {
 
         if (r < CENTER_HOLE_RADIUS) continue;
 
-        if (theta === 0) octx.moveTo(x, y);
-        else octx.lineTo(x, y);
+        if (isFirstPoint) {
+          octx.moveTo(x, y);
+          isFirstPoint = false;
+        } else {
+          octx.lineTo(x, y);
+        }
       }
       octx.stroke();
 
