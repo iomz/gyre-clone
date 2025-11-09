@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ThemeProvider } from "@/components/functional/theme-provider";
 import "./globals.css";
 
@@ -30,6 +31,7 @@ export default function RootLayout({
         >
           <Suspense>{children}</Suspense>
         </ThemeProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
